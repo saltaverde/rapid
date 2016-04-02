@@ -1,0 +1,29 @@
+2015-12-17 23:13:07,491 - DEBUG - (0.002) SELECT "rapid_apitoken"."uid", "rapid_apitoken"."key", "rapid_apitoken"."descriptor", "rapid_apitoken"."issued" FROM "rapid_apitoken" WHERE "rapid_apitoken"."descriptor" = 'Default'; args=('Default',)
+2015-12-17 23:13:07,493 - DEBUG - (0.000) UPDATE "rapid_apitoken" SET "key" = '924b3421a67587ce03f6866a25e7dd699977e610', "descriptor" = 'Default', "issued" = '23:13:07.492140'::time WHERE "rapid_apitoken"."uid" = 'kCGdWViZWeNqFgzt7C4oni'; args=('924b3421a67587ce03f6866a25e7dd699977e610', 'Default', datetime.time(23, 13, 7, 492140), 'kCGdWViZWeNqFgzt7C4oni')
+2015-12-17 23:13:07,494 - DEBUG - (0.000) INSERT INTO "rapid_apitoken" ("uid", "key", "descriptor", "issued") VALUES ('kCGdWViZWeNqFgzt7C4oni', '924b3421a67587ce03f6866a25e7dd699977e610', 'Default', '23:13:07.493541'::time); args=('kCGdWViZWeNqFgzt7C4oni', '924b3421a67587ce03f6866a25e7dd699977e610', 'Default', datetime.time(23, 13, 7, 493541))
+2015-12-17 23:13:11,177 - INFO - Starting new HTTP connection (1): eddie.cadrc.calpoly.edu
+2015-12-17 23:13:26,198 - ERROR - Function self.handle_activity(response, token_key, token_params) raised <class 'requests.exceptions.ConnectionError'> (A Connection error occurred.): HTTPConnectionPool(host='eddie.cadrc.calpoly.edu', port=8000): Max retries exceeded with url: /rapid/tokens (Caused by NewConnectionError('<requests.packages.urllib3.connection.HTTPConnection object at 0x7f5022f69110>: Failed to establish a new connection: [Errno -3] Temporary failure in name resolution',))
+2015-12-23 05:25:26,970 - DEBUG - (0.001) SELECT "rapid_apitoken"."uid", "rapid_apitoken"."key", "rapid_apitoken"."descriptor", "rapid_apitoken"."issued" FROM "rapid_apitoken" WHERE "rapid_apitoken"."descriptor" = 'Default'; args=('Default',)
+2015-12-23 05:25:30,231 - INFO - Starting new HTTP connection (1): 54.201.67.167
+2015-12-23 05:25:30,297 - DEBUG - "GET /rapid/tokens HTTP/1.1" 301 None
+2015-12-23 05:25:30,298 - INFO - Resetting dropped connection: 54.201.67.167
+2015-12-23 05:25:30,304 - DEBUG - "GET /rapid/tokens/ HTTP/1.1" 200 None
+2015-12-23 05:25:41,783 - INFO - Starting new HTTP connection (1): 54.201.67.167
+2015-12-23 05:25:41,786 - DEBUG - "GET /rapid/geoview?token=924b3421a67587ce03f6866a25e7dd699977e610 HTTP/1.1" 301 None
+2015-12-23 05:25:41,787 - INFO - Resetting dropped connection: 54.201.67.167
+2015-12-23 05:25:41,792 - DEBUG - "GET /rapid/geoview/?token=924b3421a67587ce03f6866a25e7dd699977e610 HTTP/1.1" 200 None
+2015-12-23 05:25:56,641 - INFO - Starting new HTTP connection (1): 54.201.67.167
+2015-12-23 05:25:56,647 - DEBUG - "GET /rapid/layer/?token=924b3421a67587ce03f6866a25e7dd699977e610 HTTP/1.1" 200 None
+2015-12-23 05:26:04,523 - INFO - Starting new HTTP connection (1): 54.201.67.167
+2015-12-23 05:26:04,527 - DEBUG - "GET /rapid/tokens HTTP/1.1" 301 None
+2015-12-23 05:26:04,528 - INFO - Resetting dropped connection: 54.201.67.167
+2015-12-23 05:26:04,534 - DEBUG - "GET /rapid/tokens/ HTTP/1.1" 200 None
+2015-12-23 05:26:10,728 - INFO - Starting new HTTP connection (1): 54.201.67.167
+2015-12-23 05:26:10,731 - DEBUG - "GET /rapid/tokens HTTP/1.1" 301 None
+2015-12-23 05:26:10,732 - INFO - Resetting dropped connection: 54.201.67.167
+2015-12-23 05:26:10,738 - DEBUG - "GET /rapid/tokens/ HTTP/1.1" 200 None
+2015-12-23 23:11:05,355 - DEBUG - (0.001) SELECT "rapid_apitoken"."uid", "rapid_apitoken"."key", "rapid_apitoken"."descriptor", "rapid_apitoken"."issued" FROM "rapid_apitoken" WHERE "rapid_apitoken"."descriptor" = 'Default'; args=('Default',)
+2015-12-23 23:11:07,122 - INFO - Starting new HTTP connection (1): 54.201.67.167
+2015-12-23 23:11:07,125 - DEBUG - "GET /rapid/tokens HTTP/1.1" 301 None
+2015-12-23 23:11:07,127 - INFO - Resetting dropped connection: 54.201.67.167
+2015-12-23 23:11:07,133 - DEBUG - "GET /rapid/tokens/ HTTP/1.1" 200 None

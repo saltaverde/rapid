@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Form errors</title>
+</head>
+
+<body>
+
+{% if form.errors %}
+    <ol>
+    {% for category in form.errors %}
+        <li><strong>{{ category|escape }}</strong></li>
+        {% for error in category %}
+            <li>{{ error|escape }}</li>
+        {% endfor %}
+    {% endfor %}
+    </ol>
+{% endif %}
+
+
+</body>
+</html>

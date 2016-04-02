@@ -1,0 +1,3 @@
+*.pyc
+rapid/rapid/settings.py
+rapid/data
