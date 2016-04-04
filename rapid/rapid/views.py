@@ -14,7 +14,7 @@ from rapid.importer import Importer
 from rapid.select import *
 from rapid.helpers import *
 from django.contrib.auth.decorators import login_required
-from rapid.settings import BASE_URL
+from rapid.settings import STATIC_URL
 
 class JSONResponse(HttpResponse):
     """
@@ -462,7 +462,7 @@ def getGeoview(request, geo_uid):
 @login_required
 def uploadPage(request):
     form = UploadFileForm()
-    context = {'form':form, 'BASE_URL':BASE_URL}
+    context = {'form':form, 'STATIC_URL':STATIC_URL}
     return render(request, 'upload/uploadform.html', context)
 
 @csrf_exempt
@@ -474,7 +474,7 @@ def uploadFile(request):
 
         if form.is_valid():
             handle_uploaded_file(request.FILES['file'], request.POST, request.session)
-            context = {'form' : form, 'filename': request.FILES['file'].name, 'BASE_URL':BASE_URL}
+            context = {'form' : form, 'filename': request.FILES['file'].name, 'STATIC_URL':STATIC_URL}
             return render(request, 'upload/uploadsuccess.html', context)
         else:
             context = {'form' : form}
@@ -644,7 +644,7 @@ def user_login(request):
     # The request is not a HTTP POST, so display the login form.
     # This scenario would most likely be a HTTP GET.
     else:
-        return render(request, 'login/login.html', {'BASE_URL':BASE_URL})
+        return render(request, 'login/login.html', {'STATIC_URL':STATIC_URL})
 
 @login_required
 def user_logout(request):
@@ -674,6 +674,6 @@ def portal(request):
 
         request.session['last_visit_login'] = str(datetime.now())
 
-        context = {'username': user.username, 'BASE_URL':BASE_URL}
+        context = {'username': user.username, 'STATIC_URL':STATIC_URL}
 
         return render(request, 'portal/main.html', context)
