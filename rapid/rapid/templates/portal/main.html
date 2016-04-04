@@ -5,55 +5,55 @@
 	<title>RAPID Portal: {{ username }}</title>
 
     <!-- Leaflet stuff -->
-    <script src="{{ BASE_URL }}/js/libs/leaflet-src.js"></script>
-	<link rel="stylesheet" href="{{ BASE_URL }}/js/libs/leaflet.css"/>
+    <script src="{{ STATIC_URL }}/js/libs/leaflet-src.js"></script>
+	<link rel="stylesheet" href="{{ STATIC_URL }}/js/libs/leaflet.css"/>
 	
 	<!-- Leaflet.draw plugin stuff -->
-	<script src="{{ BASE_URL }}/js/src/Leaflet.draw.js"></script>
-	<link rel="stylesheet" href="{{ BASE_URL }}/js/dist/leaflet.draw.css"/>
+	<script src="{{ STATIC_URL }}/js/src/Leaflet.draw.js"></script>
+	<link rel="stylesheet" href="{{ STATIC_URL }}/js/dist/leaflet.draw.css"/>
 
-	<script src="{{ BASE_URL }}/js/src/Toolbar.js"></script>
-	<script src="{{ BASE_URL }}/js/src/Tooltip.js"></script>
+	<script src="{{ STATIC_URL }}/js/src/Toolbar.js"></script>
+	<script src="{{ STATIC_URL }}/js/src/Tooltip.js"></script>
 
-	<script src="{{ BASE_URL }}/js/src/ext/GeometryUtil.js"></script>
-	<script src="{{ BASE_URL }}/js/src/ext/LatLngUtil.js"></script>
-	<script src="{{ BASE_URL }}/js/src/ext/LineUtil.Intersect.js"></script>
-	<script src="{{ BASE_URL }}/js/src/ext/Polygon.Intersect.js"></script>
-	<script src="{{ BASE_URL }}/js/src/ext/Polyline.Intersect.js"></script>
+	<script src="{{ STATIC_URL }}/js/src/ext/GeometryUtil.js"></script>
+	<script src="{{ STATIC_URL }}/js/src/ext/LatLngUtil.js"></script>
+	<script src="{{ STATIC_URL }}/js/src/ext/LineUtil.Intersect.js"></script>
+	<script src="{{ STATIC_URL }}/js/src/ext/Polygon.Intersect.js"></script>
+	<script src="{{ STATIC_URL }}/js/src/ext/Polyline.Intersect.js"></script>
 
-	<script src="{{ BASE_URL }}/js/src/draw/DrawToolbar.js"></script>
-	<script src="{{ BASE_URL }}/js/src/draw/handler/Draw.Feature.js"></script>
-	<script src="{{ BASE_URL }}/js/src/draw/handler/Draw.SimpleShape.js"></script>
-	<script src="{{ BASE_URL }}/js/src/draw/handler/Draw.Polyline.js"></script>
-	<script src="{{ BASE_URL }}/js/src/draw/handler/Draw.Circle.js"></script>
-	<script src="{{ BASE_URL }}/js/src/draw/handler/Draw.Marker.js"></script>
-	<script src="{{ BASE_URL }}/js/src/draw/handler/Draw.Polygon.js"></script>
-	<script src="{{ BASE_URL }}/js/src/draw/handler/Draw.Rectangle.js"></script>
+	<script src="{{ STATIC_URL }}/js/src/draw/DrawToolbar.js"></script>
+	<script src="{{ STATIC_URL }}/js/src/draw/handler/Draw.Feature.js"></script>
+	<script src="{{ STATIC_URL }}/js/src/draw/handler/Draw.SimpleShape.js"></script>
+	<script src="{{ STATIC_URL }}/js/src/draw/handler/Draw.Polyline.js"></script>
+	<script src="{{ STATIC_URL }}/js/src/draw/handler/Draw.Circle.js"></script>
+	<script src="{{ STATIC_URL }}/js/src/draw/handler/Draw.Marker.js"></script>
+	<script src="{{ STATIC_URL }}/js/src/draw/handler/Draw.Polygon.js"></script>
+	<script src="{{ STATIC_URL }}/js/src/draw/handler/Draw.Rectangle.js"></script>
 
 
-	<script src="{{ BASE_URL }}/js/src/edit/EditToolbar.js"></script>
-	<script src="{{ BASE_URL }}/js/src/edit/handler/EditToolbar.Edit.js"></script>
-	<script src="{{ BASE_URL }}/js/src/edit/handler/EditToolbar.Delete.js"></script>
+	<script src="{{ STATIC_URL }}/js/src/edit/EditToolbar.js"></script>
+	<script src="{{ STATIC_URL }}/js/src/edit/handler/EditToolbar.Edit.js"></script>
+	<script src="{{ STATIC_URL }}/js/src/edit/handler/EditToolbar.Delete.js"></script>
 
-	<script src="{{ BASE_URL }}/js/src/Control.Draw.js"></script>
+	<script src="{{ STATIC_URL }}/js/src/Control.Draw.js"></script>
 
-	<script src="{{ BASE_URL }}/js/src/edit/handler/Edit.Poly.js"></script>
-	<script src="{{ BASE_URL }}/js/src/edit/handler/Edit.SimpleShape.js"></script>
-	<script src="{{ BASE_URL }}/js/src/edit/handler/Edit.Circle.js"></script>
-	<script src="{{ BASE_URL }}/js/src/edit/handler/Edit.Rectangle.js"></script>
-	<script src="{{ BASE_URL }}/js/src/edit/handler/Edit.Marker.js"></script>
+	<script src="{{ STATIC_URL }}/js/src/edit/handler/Edit.Poly.js"></script>
+	<script src="{{ STATIC_URL }}/js/src/edit/handler/Edit.SimpleShape.js"></script>
+	<script src="{{ STATIC_URL }}/js/src/edit/handler/Edit.Circle.js"></script>
+	<script src="{{ STATIC_URL }}/js/src/edit/handler/Edit.Rectangle.js"></script>
+	<script src="{{ STATIC_URL }}/js/src/edit/handler/Edit.Marker.js"></script>
 	
 	<!-- Layer control stuff -->
-	<link rel="stylesheet" href="{{ BASE_URL }}/css/styledLayerControl.css"/>
-	<script src="{{ BASE_URL }}/js/styledLayerControl.js"></script>
+	<link rel="stylesheet" href="{{ STATIC_URL }}/css/styledLayerControl.css"/>
+	<script src="{{ STATIC_URL }}/js/styledLayerControl.js"></script>
 	
 	<script src="http://maps.google.com/maps/api/js?v=3.2&sensor=false"></script>
     
-    <script src="{{ BASE_URL }}/js/plugins/leaflet-google.js"></script>
+    <script src="{{ STATIC_URL }}/js/plugins/leaflet-google.js"></script>
    
     
-    <script src="{{ BASE_URL }}/js/geoViewHandler.js"></script>
-    <script src="{{ BASE_URL }}/js/layerHandler.js"></script>
+    <script src="{{ STATIC_URL }}/js/geoViewHandler.js"></script>
+    <script src="{{ STATIC_URL }}/js/layerHandler.js"></script>
     
 
     <style>
@@ -98,8 +98,8 @@
        <a href="/rapid/logout/">Log Out</a>
     {% endif %}
 
-   	<script src="{{ BASE_URL }}/js/jquery-1.9.1.min.js"></script>
-    <script src="{{ BASE_URL }}/js/request.js"></script>
+   	<script src="{{ STATIC_URL }}/js/jquery-1.9.1.min.js"></script>
+    <script src="{{ STATIC_URL }}/js/request.js"></script>
     
 	  <script>
 

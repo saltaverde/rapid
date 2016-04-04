@@ -10,8 +10,8 @@
   <!--------------- Logo Container ----------------->
   <div style="width:100%; margin:auto; margin-top:50px;">
   <div style="width: 600px; margin: auto;">
-    <img src="{{ BASE_URL }}/images/CP_Logo.png" alt="Cal Poly Logo" style="margin: auto; margin-right: 1em; height: 6em; padding: 10px">
-    <img src="{{ BASE_URL }}/images/PRCI.jpg" alt="PRCI" style="margin: auto; margin-left: 1em; height: 6em; padding: 10px">
+    <img src="{{ STATIC_URL }}/images/CP_Logo.png" alt="Cal Poly Logo" style="margin: auto; margin-right: 1em; height: 6em; padding: 10px">
+    <img src="{{ STATIC_URL }}/images/PRCI.jpg" alt="PRCI" style="margin: auto; margin-left: 1em; height: 6em; padding: 10px">
     </div>
   </div>
   
@@ -22,7 +22,7 @@
     </div>
     <br><br>
     <div style="margin: auto;display: flex;justify-content: center; font-family: Tahoma">
-    <form id="form" action="{{ BASE_URL }}:8000/rapid/uploadFile/" method="post" enctype="multipart/form-data">
+    <form id="form" action="{{ STATIC_URL }}:8000/rapid/uploadFile/" method="post" enctype="multipart/form-data">
            {{ form }}
         <input id="submit" type="submit" value="Submit" disabled>
         </form>
@@ -40,7 +40,7 @@
                         extension = extension[0].toUpperCase();
                     if (extension == 'ZIP' || extension == 'JSON') {
                         submit.disabled = false;
-                        form.action = '{{ BASE_URL }}:8000/rapid/uploadFile/'
+                        form.action = '{{ STATIC_URL }}:8000/rapid/uploadFile/'
                         token_input = document.getElementById('id_token')
                         token_input.value = token
                     }
