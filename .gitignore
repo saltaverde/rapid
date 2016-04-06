@@ -1,3 +1,8 @@
 *.pyc
 rapid/rapid/settings.py
 rapid/data
+rapid/conf
+rapid/manage.py
+*__init__.py
+rapid/rapid/wsgi.py
+
