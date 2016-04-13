@@ -14,7 +14,7 @@ from rapid.importer import Importer
 from rapid.select import *
 from rapid.helpers import *
 from django.contrib.auth.decorators import login_required
-from rapid.settings import STATIC_URL
+from rapid.settings import STATIC_URL, BASE_URL
 
 class JSONResponse(HttpResponse):
     """
@@ -28,24 +28,23 @@ class JSONResponse(HttpResponse):
 
 
 def get_token_key(request):
-    token_key = None
-    if request.GET.get('token'):
-        token_key = request.GET.get('token')
-    elif request.POST.get('token'):
-        token_key = request.POST.get('token')
+
+    token_key = ApiToken.objects.get(uid=request.session.get('token')).key
 
     return token_key
 
 
 @csrf_exempt
+@login_required
 def layers(request):
     message = ''
     descriptor = None
     properties = None
     is_public = None
 
-    token_key = get_token_key(request)
-    data = DataOperator(token_key)
+    user_token_key = get_token_key(request)
+
+    data = DataOperator(user_token_key)
 
     if request.method == 'POST':
         jsonDict = json.loads(request.body)
@@ -92,6 +91,7 @@ def layers(request):
 
 
 @csrf_exempt
+@login_required
 def geoviews(request):
     message = ''
     geometry = None
@@ -99,8 +99,9 @@ def geoviews(request):
     properties = None
     public = False
 
-    token_key = get_token_key(request)
-    data = DataOperator(token_key)
+    user_token_key = get_token_key(request)
+
+    data = DataOperator(user_token_key)
 
     if request.method == 'POST':
         jsonDict = json.loads(request.body)
@@ -143,9 +144,10 @@ def geoviews(request):
     return HttpResponse(message)
 
 @csrf_exempt
+@login_required
 def addGeoViewOwner(request, geo_uid, token_uid):
-    token_key = get_token_key(request)
-    data = DataOperator(token_key)
+    user_token_key = get_token_key(request)
+    data = DataOperator(user_token_key)
 
     if data.has_geoview_permissions(geo_uid, Role.OWNER):
         role = GeoViewRole(geo_view_id=geo_uid, role=Role.OWNER, token_id=token_uid)
@@ -155,9 +157,10 @@ def addGeoViewOwner(request, geo_uid, token_uid):
         return HttpResponse(json_error('Not permitted to edit GeoView.'))
 
 @csrf_exempt
+@login_required
 def addGeoViewEditor(request, geo_uid, token_uid):
-    token_key = get_token_key(request)
-    data = DataOperator(token_key)
+    user_token_key = get_token_key(request)
+    data = DataOperator(user_token_key)
 
     if data.has_geoview_permissions(geo_uid, Role.OWNER):
         role = GeoViewRole(geo_view_id=geo_uid, role=Role.EDITOR, token_id=token_uid)
@@ -167,9 +170,10 @@ def addGeoViewEditor(request, geo_uid, token_uid):
         return HttpResponse(json_error('Not permitted to edit GeoView.'))
 
 @csrf_exempt
+@login_required
 def addGeoViewViewer(request, geo_uid, token_uid):
-    token_key = get_token_key(request)
-    data = DataOperator(token_key)
+    user_token_key = get_token_key(request)
+    data = DataOperator(user_token_key)
 
     if data.has_geoview_permissions(geo_uid, Role.OWNER):
         role = GeoViewRole(geo_view_id=geo_uid, role=Role.VIEWER, token_id=token_uid)
@@ -179,9 +183,10 @@ def addGeoViewViewer(request, geo_uid, token_uid):
         return HttpResponse(json_error('Not permitted to edit GeoView.'))
 
 @csrf_exempt
+@login_required
 def addLayerOwner(request, layer_uid, token_uid):
-    token_key = get_token_key(request)
-    data = DataOperator(token_key)
+    user_token_key = get_token_key(request)
+    data = DataOperator(user_token_key)
 
     if data.has_layer_permissions(layer_uid, Role.OWNER):
         role = GeoViewRole(layer_id=layer_uid, role=Role.OWNER, token_id=token_uid)
@@ -191,9 +196,10 @@ def addLayerOwner(request, layer_uid, token_uid):
         return HttpResponse(json_error('Not permitted to edit layer.'))
 
 @csrf_exempt
+@login_required
 def addLayerEditor(request, layer_uid, token_uid):
-    token_key = get_token_key(request)
-    data = DataOperator(token_key)
+    user_token_key = get_token_key(request)
+    data = DataOperator(user_token_key)
 
     if data.has_layer_permissions(layer_uid, Role.OWNER):
         role = DataLayerRole(layer_id=layer_uid, role=Role.EDITOR, token_id=token_uid)
@@ -203,9 +209,10 @@ def addLayerEditor(request, layer_uid, token_uid):
         return HttpResponse(json_error('Not permitted to edit layer.'))
 
 @csrf_exempt
+@login_required
 def addLayerViewer(request, layer_uid, token_uid):
-    token_key = get_token_key(request)
-    data = DataOperator(token_key)
+    user_token_key = get_token_key(request)
+    data = DataOperator(user_token_key)
 
     if data.has_layer_permissions(layer_uid, Role.OWNER):
         role = DataLayerRole(layer_id=layer_uid, role=Role.VIEWER, token_id=token_uid)
@@ -215,9 +222,10 @@ def addLayerViewer(request, layer_uid, token_uid):
         return HttpResponse(json_error('Not permitted to edit layer.'))
 
 @csrf_exempt
+@login_required
 def removeGeoViewOwner(request, geo_uid, token_uid):
-    token_key = get_token_key(request)
-    data = DataOperator(token_key)
+    user_token_key = get_token_key(request)
+    data = DataOperator(user_token_key)
 
     if data.has_geoview_permissions(geo_uid, Role.OWNER):
         GeoViewRole.objects.filter(geo_view_id=geo_uid, role=Role.OWNER, token_id=token_uid).delete()
@@ -226,9 +234,10 @@ def removeGeoViewOwner(request, geo_uid, token_uid):
         return HttpResponse(json_error('Not permitted to edit GeoView.'))
 
 @csrf_exempt
+@login_required
 def removeGeoViewEditor(request, geo_uid, token_uid):
-    token_key = get_token_key(request)
-    data = DataOperator(token_key)
+    user_token_key = get_token_key(request)
+    data = DataOperator(user_token_key)
 
     if data.has_geoview_permissions(geo_uid, Role.OWNER):
         GeoViewRole.objects.filter(geo_view_id=geo_uid, role=Role.EDITOR, token_id=token_uid).delete()
@@ -237,9 +246,10 @@ def removeGeoViewEditor(request, geo_uid, token_uid):
         return HttpResponse(json_error('Not permitted to edit GeoView.'))
 
 @csrf_exempt
+@login_required
 def removeGeoViewViewer(request, geo_uid, token_uid):
-    token_key = get_token_key(request)
-    data = DataOperator(token_key)
+    user_token_key = get_token_key(request)
+    data = DataOperator(user_token_key)
 
     if data.has_geoview_permissions(geo_uid, Role.OWNER):
         GeoViewRole.objects.filter(geo_view_id=geo_uid, role=Role.VIEWER, token_id=token_uid).delete()
@@ -248,9 +258,10 @@ def removeGeoViewViewer(request, geo_uid, token_uid):
         return HttpResponse(json_error('Not permitted to edit GeoView.'))
 
 @csrf_exempt
+@login_required
 def removeLayerOwner(request, layer_uid, token_uid):
-    token_key = get_token_key(request)
-    data = DataOperator(token_key)
+    user_token_key = get_token_key(request)
+    data = DataOperator(user_token_key)
 
     if data.has_layer_permissions(layer_uid, Role.OWNER):
         DataLayerRole.objects.filter(layer_id=layer_uid, role=Role.OWNER, token_id=token_uid).delete()
@@ -259,9 +270,10 @@ def removeLayerOwner(request, layer_uid, token_uid):
         return HttpResponse(json_error('Not permitted to edit Layer.'))
 
 @csrf_exempt
+@login_required
 def removeLayerEditor(request, layer_uid, token_uid):
-    token_key = get_token_key(request)
-    data = DataOperator(token_key)
+    user_token_key = get_token_key(request)
+    data = DataOperator(user_token_key)
 
     if data.has_layer_permissions(layer_uid, Role.OWNER):
         DataLayerRole.objects.filter(layer_id=layer_uid, role=Role.EDITOR, token_id=token_uid).delete()
@@ -270,9 +282,10 @@ def removeLayerEditor(request, layer_uid, token_uid):
         return HttpResponse(json_error('Not permitted to edit Layer.'))
 
 @csrf_exempt
+@login_required
 def removeLayerViewer(request, layer_uid, token_uid):
-    token_key = get_token_key(request)
-    data = DataOperator(token_key)
+    user_token_key = get_token_key(request)
+    data = DataOperator(user_token_key)
 
     if data.has_layer_permissions(layer_uid, Role.OWNER):
         DataLayerRole.objects.filter(layer_id=layer_uid, role=Role.VIEWER, token_id=token_uid).delete()
@@ -281,9 +294,10 @@ def removeLayerViewer(request, layer_uid, token_uid):
         return HttpResponse(json_error('Not permitted to edit Layer.'))
 
 @csrf_exempt
+@login_required
 def addLayerToGeoview(request, geo_uid, layer_uid):
-    token_key = get_token_key(request)
-    data = DataOperator(token_key)
+    user_token_key = get_token_key(request)
+    data = DataOperator(user_token_key)
 
     if data.has_geoview_permissions(geo_uid, Role.EDITOR):
         message = data.add_layer_to_geoview(geo_uid, layer_uid)
@@ -292,9 +306,10 @@ def addLayerToGeoview(request, geo_uid, layer_uid):
         return HttpResponse(json_error('Not permitted to edit GeoView.'))
 
 @csrf_exempt
+@login_required
 def removeLayerFromGeoview(request, geo_uid, layer_uid):
-    token_key = get_token_key(request)
-    data = DataOperator(token_key)
+    user_token_key = get_token_key(request)
+    data = DataOperator(user_token_key)
 
     if data.has_geoview_permissions(geo_uid, Role.EDITOR):
         message = data.remove_layer_from_geoview(geo_uid, layer_uid)
@@ -302,12 +317,12 @@ def removeLayerFromGeoview(request, geo_uid, layer_uid):
     else:
         return HttpResponse(json_error('Not permitted to edit GeoView.'))
 
-    return HttpResponse(json_error(message))
 
 @csrf_exempt
+@login_required
 def features(request):
-    token_key = get_token_key(request)
-    data = DataOperator(token_key)
+    user_token_key = get_token_key(request)
+    data = DataOperator(user_token_key)
 
     if request.method == 'POST':
         jsonDict = json.loads(request.body)
@@ -330,10 +345,11 @@ def features(request):
     return HttpResponse(json_error('Must POST a feature to this endpoint'))
 
 @csrf_exempt
+@login_required
 def featuresFromURL(request, layerId):
-    token_key = get_token_key(request)
-    data = DataOperator(token_key)
-    importer = Importer(token_key)
+    user_token_key = get_token_key(request)
+    data = DataOperator(user_token_key)
+    importer = Importer(user_token_key)
 
     if not data.has_layer_permissions(layerId, Role.EDITOR):
         return HttpResponse(json_error('No editing permissions on layer.'))
@@ -351,9 +367,10 @@ def featuresFromURL(request, layerId):
     return HttpResponse(json_error('must GET'))
 
 @csrf_exempt
+@login_required
 def getFeature(request, feature_uid):
-    token_key = get_token_key(request)
-    data = DataOperator(token_key)
+    user_token_key = get_token_key(request)
+    data = DataOperator(user_token_key)
 
     if request.method == 'POST':
         jsonDict = json.loads(request.body)
@@ -394,9 +411,10 @@ def getFeature(request, feature_uid):
 
 
 @csrf_exempt
+@login_required
 def getLayer(request, layer_uid):
-    token_key = get_token_key(request)
-    data = DataOperator(token_key)
+    user_token_key = get_token_key(request)
+    data = DataOperator(user_token_key)
 
     if request.method == 'GET':
         start = None
@@ -425,15 +443,18 @@ def getLayer(request, layer_uid):
     return HttpResponse(json_error('ERROR: must GET or DELETE'))
 
 @csrf_exempt
+@login_required
 def getTokens(request):
     json_resp = to_json(DataOperator().get_apitokens())
     return HttpResponse(json_resp)
 
 
 @csrf_exempt
+@login_required
 def getGeoview(request, geo_uid):
-    token_key = get_token_key(request)
-    data = DataOperator(token_key)
+
+    user_token_key = get_token_key(request)
+    data = DataOperator(user_token_key)
 
     if request.method == 'GET':
         if not data.has_geoview_permissions(geo_uid, Role.VIEWER):
@@ -446,7 +467,7 @@ def getGeoview(request, geo_uid):
         else:
             geoview = data.get_geoview(geo_uid)
             geoview.include_layers = geoview.include_geom = True
-            geoview.token_key = token_key
+            geoview.token_key = user_token_key
             myjson = to_json(geoview)
             geoview.include_layers = geoview.include_geom = False
             return HttpResponse(myjson, content_type='application/json')
@@ -474,7 +495,10 @@ def uploadFile(request):
 
         if form.is_valid():
             handle_uploaded_file(request.FILES['file'], request.POST, request.session)
-            context = {'form' : form, 'filename': request.FILES['file'].name, 'STATIC_URL':STATIC_URL}
+            context = {'form' : form,
+                       'filename': request.FILES['file'].name,
+                       'STATIC_URL':STATIC_URL,
+                       'BASE_URL':BASE_URL}
             return render(request, 'upload/uploadsuccess.html', context)
         else:
             context = {'form' : form}
@@ -484,7 +508,7 @@ def uploadFile(request):
         return HttpResponse(json_error('request.method != "POST"'))
 
 #@csrf_exempt
-#@login_required
+@login_required
 def handle_uploaded_file(f, request, session):
     from rapid.settings import DROPBOX_DIR
 
@@ -496,10 +520,8 @@ def handle_uploaded_file(f, request, session):
         for chunk in f.chunks():
             destination.write(chunk)
 
-    user_token = ApiToken.objects.get(uid=session.get('token'))
-    token_key = user_token.key
-
-    data = DataOperator(token_key)
+    user_token_key = ApiToken.objects.get(uid=session.get('token')).key
+    data = DataOperator(user_token_key)
 
     if request['des']:
         descriptor = request['des']
@@ -521,7 +543,7 @@ def handle_uploaded_file(f, request, session):
     role = DataLayerRole(layer_id=layer_uid, token=data.get_apitoken(), role=Role.OWNER)
     role.save()
 
-    importer = Importer(token_key)
+    importer = Importer(user_token_key)
 
     if (ext.upper() == 'ZIP'):
         importer.import_shapefile(file_path, layer_uid)
@@ -530,7 +552,22 @@ def handle_uploaded_file(f, request, session):
         importer.import_geojson_file(file_path, layer_uid)
 
     return
+"""
+def uploadGeoview(request):
+    if request.method == 'POST':
+        form = UploadGeoviewForm(request.POST, request.FILES)
 
+        if form.is_valid():
+            handle_uploaded_Geoview(request.FILES['file'], request.POST, request.session)
+            context = {'form' : form, 'filename': request.FILES['file'].name, 'STATIC_URL':STATIC_URL}
+            return render(request, 'upload/uploadsuccess.html', context)
+        else:
+            context = {'form' : form}
+            return render(request, 'upload/formerrors.html', context)
+    else:
+        form = UploadFileForm()
+        return HttpResponse(json_error('request.method != "POST"'))
+"""
 
 def register(request):
 

@@ -27,3 +27,7 @@
 2015-12-23 23:11:07,125 - DEBUG - "GET /rapid/tokens HTTP/1.1" 301 None
 2015-12-23 23:11:07,127 - INFO - Resetting dropped connection: 54.201.67.167
 2015-12-23 23:11:07,133 - DEBUG - "GET /rapid/tokens/ HTTP/1.1" 200 None
+2016-04-12 18:07:35,439 - DEBUG - (0.036) SELECT "rapid_apitoken"."uid", "rapid_apitoken"."key", "rapid_apitoken"."descriptor", "rapid_apitoken"."issued" FROM "rapid_apitoken" WHERE "rapid_apitoken"."key" = 'c1180c2f35382053ec273c91cb79d1a3e1dae5f3'; args=('c1180c2f35382053ec273c91cb79d1a3e1dae5f3',)
+2016-04-12 18:07:38,948 - INFO - Starting new HTTP connection (1): 54.201.67.167
+2016-04-12 18:07:39,023 - DEBUG - "GET /rapid/geoview?token=c1180c2f35382053ec273c91cb79d1a3e1dae5f3 HTTP/1.1" 301 0
+2016-04-12 18:07:39,068 - DEBUG - "GET /rapid/geoview/?token=c1180c2f35382053ec273c91cb79d1a3e1dae5f3 HTTP/1.1" 200 None

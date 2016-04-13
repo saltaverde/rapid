@@ -44,9 +44,9 @@ function translateGeoView (drawnItems, desc) {
 */
 function sendGeoView (geoView) {
 		try {
-			//ajaxCall(Request.TO_GEOVIEW+"?token="+localStorage.getItem('token'), function (geoViewText)
+
 			var oReq = new XMLHttpRequest();
-			oReq.open("POST", Request.TO_GEOVIEW + '?token=' + localStorage.getItem('token'));
+			oReq.open("POST", Request.TO_GEOVIEW);
 			oReq.send(JSON.stringify(geoView));
 
 			oReq.onreadystatechange = function() {

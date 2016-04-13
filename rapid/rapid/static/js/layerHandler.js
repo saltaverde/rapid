@@ -3,7 +3,7 @@ var layers  = {};
 var refreshLayers = function () {
 	try {
 			var oReq = new XMLHttpRequest();
-			oReq.open("GET", Request.TO_LAYER + '?token=' + localStorage.getItem('token'));
+			oReq.open("GET", Request.TO_LAYER);
 			oReq.send();
 
 			oReq.onreadystatechange = function() {
