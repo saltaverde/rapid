@@ -1,8 +1,8 @@
 var Request = {
     // Constant webpage endpoints
-    TO_FEATURE: "http://54.201.67.107:8000/rapid/feature/",
-    TO_LAYER: "http://54.201.67.107:8000/rapid/layer/",
-    TO_GEOVIEW: "http://54.201.67.107:8000/rapid/geoview/"
+    TO_FEATURE: "/rapid/feature/",
+    TO_LAYER: "/rapid/layer/",
+    TO_GEOVIEW: "/rapid/geoview/"
 }; 
 
 var geoViewStyle = {
@@ -31,7 +31,7 @@ function getGeoviews(geoViewsText, getLayers) {
 
     // Grab individual geoview 
     for (var i = 0; i < views.length; i++) {
-        ajaxCall(Request.TO_GEOVIEW+views[i].uid+"?token="+tokn, function(response) {
+        ajaxCall(Request.TO_GEOVIEW + views[i].uid, function(response) {
             getGeoview(response, getLayers)});
         }
        

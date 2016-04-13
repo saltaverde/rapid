@@ -9,6 +9,9 @@ class UploadFileForm(forms.Form):
     #token = forms.CharField(max_length=100, widget=forms.HiddenInput(attrs={'style' : 'display: none'}))
     file = forms.FileField(label='File ')
 
+class UploadGeoviewForm(forms.Form):
+    des = forms.CharField(max_length=50, label='Description ')
+    file = forms.FileField(label='File ')
 
 class UserForm(forms.ModelForm):
     password = forms.CharField(widget=forms.PasswordInput())
