@@ -1,4 +1,5 @@
 from django.contrib.gis.geos import GEOSGeometry, Point
+from django.contrib.gis.gdal import DataSource as GdalDataSource
 import geojson
 import urllib2
 from rapid.helpers import *
@@ -70,9 +71,9 @@ class Importer(object):
         srid = 4326
 
         if len(prj_matches) > 0:
-            prj_location = prj_matches[0]
-            prj_content = open(prj_location, 'r').read().strip()
-            srid = prj_content_to_srid(prj_content)
+            ds = GdalDataSource(shp_location)
+            lyrs = [lyr for lyr in ds]
+            srid = lyrs[0].srs.srid
 
         sf = shapefile.Reader(shp_location)
 
