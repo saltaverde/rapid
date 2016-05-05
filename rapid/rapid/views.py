@@ -4,7 +4,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.static import serve
 from django.template import RequestContext
 import os
-from .models import ApiToken
+from .models import *
 from .forms import UploadFileForm, UserForm, UserProfileForm
 from django.shortcuts import render_to_response, render
 from rest_framework.renderers import JSONRenderer
@@ -14,7 +14,8 @@ from rapid.importer import Importer
 from rapid.select import *
 from rapid.helpers import *
 from django.contrib.auth.decorators import login_required
-from rapid.settings import STATIC_URL, BASE_URL
+from rapid.settings import STATIC_URL, BASE_URL, FEATURETYPE_XML_TEMPLATE_PATH, GEOSERVER_REST_ENDPOINT
+
 
 class JSONResponse(HttpResponse):
     """
@@ -25,7 +26,6 @@ class JSONResponse(HttpResponse):
         content = JSONRenderer().render(data)
         kwargs['content_type'] = 'application/json'
         super(JSONResponse, self).__init__(content, **kwargs)
-
 
 def get_token_key(request):
 
@@ -507,8 +507,7 @@ def uploadFile(request):
         form = UploadFileForm()
         return HttpResponse(json_error('request.method != "POST"'))
 
-#@csrf_exempt
-@login_required
+@csrf_exempt
 def handle_uploaded_file(f, request, session):
     from rapid.settings import DROPBOX_DIR
 
@@ -551,23 +550,28 @@ def handle_uploaded_file(f, request, session):
     if (ext.upper() == 'JSON'):
         importer.import_geojson_file(file_path, layer_uid)
 
-    return
-"""
-def uploadGeoview(request):
-    if request.method == 'POST':
-        form = UploadGeoviewForm(request.POST, request.FILES)
+    # Adds featuretype to Geoserver
+    if create_featuretype(layer_uid) is None:
+        print 'WARNING: featuretype %s was not successfully sent to Geoserver'.format(layer_uid)
 
-        if form.is_valid():
-            handle_uploaded_Geoview(request.FILES['file'], request.POST, request.session)
-            context = {'form' : form, 'filename': request.FILES['file'].name, 'STATIC_URL':STATIC_URL}
-            return render(request, 'upload/uploadsuccess.html', context)
-        else:
-            context = {'form' : form}
-            return render(request, 'upload/formerrors.html', context)
+    return
+
+def create_featuretype(uid):
+    import rapid.gs as GS
+
+    gs = GS.Geoserver()
+
+    ft = gs.createFeatureTypeFromUid(uid)
+
+    if ft is not None:
+        response = gs.sendFeatureType(ft)
+
+    if response.status_code == 201:
+        location = response.headers['Location']
+        return location
+
     else:
-        form = UploadFileForm()
-        return HttpResponse(json_error('request.method != "POST"'))
-"""
+        return None
 
 def register(request):
 
@@ -668,11 +672,11 @@ def user_login(request):
                 # We'll send the user back to the homepage.
                 request.session.set_test_cookie()
                 login(request, user)
-                request.session.set_expiry(0)
+                request.session.set_expiry(300)
                 return HttpResponseRedirect('/rapid/portal/')
             else:
                 # An inactive account was used - no logging in!
-                return HttpResponse("Your RAPID account has been deactivated.  Please contact the RAPID administrator.")
+                return HttpResponse("Your RAPID account has been deactivated. Please contact your RAPID administrator.")
         else:
             # Bad login details were provided. So we can't log the user in.
             print "Invalid login details: {0}, {1}".format(username, password)
