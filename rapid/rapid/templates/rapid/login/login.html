@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+{% block title %}RAPID Login{% endblock title %}
+
+{% block content %}
+    <div class="row">
+        <!--------------- Logo Container ----------------->
+        <div style="margin-top:50px;">
+            <div class="mainbox col-md-3 col-md-offset-3 col-sm-4 col-sm-offset-2">
+                <img src="{{ STATIC_URL }}images/CP_Logo.png" alt="Cal Poly Logo" style="height: 6em; padding: 10px">
+            </div>
+            <div class="mainbox col-md-3 col-sm-4">
+                <img src="{{ STATIC_URL }}images/PRCI.jpg" alt="PRCI" style="margin-left: 10em; height: 6em; padding: 10px">
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div style="margin-top:50px;" class="col-lg-6 col-lg-offset-3 col-md-6 col-offset-3 col-sm-8 col-sm-offset-2">
+
+            <h4 style="border-bottom: 1px solid #c5c5c5;">
+                <i class="glyphicon glyphicon-user">
+                </i>
+                Account Access
+            </h4>
+
+            <!--------------- Login Section ----------------->
+            <div style="padding: 20px;" id="form-login-wrapper">
+                <form accept-charset="UTF-8" id="login-form" method="post" action="/rapid/login/" role="form">
+
+                    <h4>Welcome to RAPID</h4>
+                    <fieldset>
+                        {% csrf_token %}
+                        <div class="form-group input-group">
+                            <span class="input-group-addon">
+                                <i class="glyphicon glyphicon-user">
+                                </i>
+                            </span>
+                            <input id="login-username" type="text" class="form-control" name="username" value="" placeholder="Username" required="" onkeydown="if (event.keyCode == 13) {Login.isUser(this.form);}">
+                        </div>
+                        <div class="form-group input-group">
+                            <span class="input-group-addon">
+                                <i class="glyphicon glyphicon-lock">
+                                </i>
+                            </span>
+                            <input id="login-password" type="password" class="form-control" name="password" placeholder="Password" required="" onkeydown="if (event.keyCode == 13) {Login.isUser(this.form);}">
+                        </div>
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-primary btn-block">
+                                Access
+                            </button>
+                            <p class="help-block">
+                                <a class="pull-right text-muted" href="#" id="forgot-password-link"><small>Forgot your password?</small></a>
+                                <a class="pull-left text-muted" href="#" id="register-link"><small>Don't have an account! Register Here</small></a>
+                            </p>
+                        </div>
+                    </fieldset>
+                </form>
+            </div>
+
+            <div style="display: none;" id="form-forgot-password-wrapper">
+                <h4 class="">
+                    Forgot your password?
+                </h4>
+                <form accept-charset="UTF-8" role="form" id="forgot-password-form" method="post">
+                    <fieldset>
+                        <span class="help-block">
+                            Email address you use to log in to your account
+                            <br>
+                            We'll send you an email with instructions to choose a new password.
+                        </span>
+                        <div class="form-group input-group">
+                            <span class="input-group-addon">
+                                @
+                            </span>
+                            <input class="form-control" placeholder="Email" name="email" type="email" required="">
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block" id="btn-forgot-passowrd">
+                            Continue
+                        </button>
+                        <p class="help-block">
+                            <a class="text-muted" href="#" id="access1"><small>Account Access</small></a>
+                        </p>
+                    </fieldset>
+                </form>
+            </div>
+
+            <div style="display: none;" id="form-register-wrapper">
+                <h4 class="">
+                    Welcome to RAPID
+                </h4>
+                <form accept-charset="UTF-8" id="user_form" method="post" action="/rapid/register/" enctype="multipart/form-data">
+                    <fieldset>
+                        {% csrf_token %}
+                        <span class="help-block">
+                            Signup page
+                            <br>
+                            Please sign up and start!
+                        </span>
+                        <div class="form-group input-group">
+                            <span class="input-group-addon">
+                                <i class="glyphicon glyphicon-user">
+                                </i>
+                            </span>
+                            <input class="form-control" placeholder="Username" name="username" type="text" required="">
+                        </div>
+
+                        <div class="form-group input-group">
+                            <span class="input-group-addon">
+                                <i class="glyphicon glyphicon-lock">
+                                </i>
+                          </span>
+                          <input class="form-control" placeholder="Password" name="password_new" type="password" required="">
+                        </div>
+
+                        <div class="form-group input-group">
+                            <span class="input-group-addon">
+                                <i class="glyphicon glyphicon-lock">
+                                </i>
+                            </span>
+                            <input class="form-control" placeholder="Repeat Password" name="password_new_2" type="password" required="">
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-block" id="btn-register">
+                            Continue
+                        </button>
+
+                        <p class="help-block">
+                            <a class="text-muted" href="#" id="access2"><small>Account Access</small></a>
+                        </p>
+                    </fieldset>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
