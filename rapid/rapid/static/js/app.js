@@ -11,32 +11,15 @@ $(document).ready(function() {
   $('#forgot-password-link').click(function(e) {
     e.preventDefault();
     $('div#form-login-wrapper').toggle('500');
+    $('#box_text span').text('RAPID Frogot Password?');
   });
-  $('#access1').click(function(e) {
+  $('#access').click(function(e) {
     e.preventDefault();
     $('div#form-login-wrapper').toggle('500');
+    $('#box_text span').text('RAPID Login');
   });
-  $('#access1').click(function(e) {
+  $('#access').click(function(e) {
     e.preventDefault();
     $('div#form-forgot-password-wrapper').toggle('500');
-  });
-});
-
-$(document).ready(function() {
-  $('#register-link').click(function(e) {
-    e.preventDefault();
-    $('div#form-register-wrapper').toggle('500');
-  });
-  $('#register-link').click(function(e) {
-    e.preventDefault();
-    $('div#form-login-wrapper').toggle('500');
-  });
-  $('#access2').click(function(e) {
-    e.preventDefault();
-    $('div#form-login-wrapper').toggle('500');
-  });
-  $('#access2').click(function(e) {
-    e.preventDefault();
-    $('div#form-register-wrapper').toggle('500');
   });
 });
