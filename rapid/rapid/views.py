@@ -484,7 +484,7 @@ def getGeoview(request, geo_uid):
 def uploadPage(request):
     form = UploadFileForm()
     context = {'form':form, 'STATIC_URL':STATIC_URL}
-    return render(request, 'upload/uploadform.html', context)
+    return render(request, 'rapid/upload/uploadform.html', context)
 
 @csrf_exempt
 @login_required
@@ -499,10 +499,10 @@ def uploadFile(request):
                        'filename': request.FILES['file'].name,
                        'STATIC_URL':STATIC_URL,
                        'BASE_URL':BASE_URL}
-            return render(request, 'upload/uploadsuccess.html', context)
+            return render(request, 'rapid/upload/uploadsuccess.html', context)
         else:
             context = {'form' : form}
-            return render(request, 'upload/formerrors.html', context)
+            return render(request, 'rapid/upload/formerrors.html', context)
     else:
         form = UploadFileForm()
         return HttpResponse(json_error('request.method != "POST"'))
@@ -560,10 +560,10 @@ def uploadGeoview(request):
         if form.is_valid():
             handle_uploaded_Geoview(request.FILES['file'], request.POST, request.session)
             context = {'form' : form, 'filename': request.FILES['file'].name, 'STATIC_URL':STATIC_URL}
-            return render(request, 'upload/uploadsuccess.html', context)
+            return render(request, 'rapid/upload/uploadsuccess.html', context)
         else:
             context = {'form' : form}
-            return render(request, 'upload/formerrors.html', context)
+            return render(request, 'rapid/upload/formerrors.html', context)
     else:
         form = UploadFileForm()
         return HttpResponse(json_error('request.method != "POST"'))
@@ -635,7 +635,7 @@ def register(request):
 
     # Render the template depending on the context.
     return render_to_response(
-            'register/register.html',
+            'rapid/register/register.html',
             {'user_form': user_form, 'profile_form': profile_form, 'registered': registered}, context)
 
 def user_login(request):
@@ -681,7 +681,7 @@ def user_login(request):
     # The request is not a HTTP POST, so display the login form.
     # This scenario would most likely be a HTTP GET.
     else:
-        return render(request, 'login/login.html', {'STATIC_URL':STATIC_URL})
+        return render(request, 'rapid/login/login.html', {'STATIC_URL':STATIC_URL})
 
 @login_required
 def user_logout(request):
@@ -713,4 +713,4 @@ def portal(request):
 
         context = {'username': user.username, 'STATIC_URL':STATIC_URL}
 
-        return render(request, 'portal/main.html', context)
+        return render(request, 'rapid/portal/main.html', context)

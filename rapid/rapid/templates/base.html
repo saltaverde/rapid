@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<!--[if IE 7]>                  <html class='ie7 no-js' lang='en'>     <![endif]-->
+<!--[if lte IE 8]>              <html class='ie8 no-js' lang='en'>     <![endif]-->
+<!--[if (gte IE 9)|!(IE)]><!--> <html class='not-ie no-js' lang='en'>  <!--<![endif]-->
+<html>
+    <head>
+        <title>{% block title %} RAPID Login {% endblock title %}</title>
+
+        {% block head_favicon %}
+            <link rel="icon" type="image/png"
+                  href="{{ STATIC_URL }}images/favicon.ico">
+        {% endblock head_favicon %}
+
+        {% block head_meta %}
+            {% block head_meta_charset %}
+                <meta http-equiv="Content-Type"
+                      content="text/html; charset=utf-8" />
+            {% endblock head_meta_charset %}
+            {% block head_meta_contentlanguage %}
+                <meta http-equiv="Content-Language" value="en-US" />
+            {% endblock head_meta_contentlanguage %}
+            {% block head_meta_viewport %}
+                <meta name="viewport"
+                      content="width=device-width, initial-scale=1.0">
+            {% endblock head_meta_viewport %}
+        {% endblock head_meta %}
+
+        {% block head_css %}
+            {% block head_css_site %}
+                <link href="{{ STATIC_URL }}css/bootstrap.css"
+                      rel="stylesheet" media="screen">
+                <link href="{{ STATIC_URL }}css/app.css"
+                      rel="stylesheet" media="screen">
+            {% endblock head_css_site %}
+
+            {% block head_css_section %}{% endblock head_css_section %}
+
+            {% block head_css_page %}{% endblock head_css_page %}
+        {% endblock head_css %}
+    </head>
+
+    <body>
+        <header>
+            {# Navigation Menu #}
+        </header>
+        <div class="container">
+            {% block content %}
+                IF YOU SEE THIS, SOMETHING IS WRONG!
+            {% endblock content %}
+        </div>
+
+        <footer>
+            {# The Footer #}
+        </footer>
+    </body>
+
+    {% block footer_javascript %}
+        {% block footer_javascript_site %}
+            <script src="{{ STATIC_URL }}js/jquery-1.9.1.min.js"></script>
+            <script src="{{ STATIC_URL }}js/bootstrap.js"></script>
+            <script src="{{ STATIC_URL }}js/npm.js"></script>
+            <script src="{{ STATIC_URL }}js/app.js"></script>
+        {% endblock footer_javascript_site %}
+        {% block footer_javascript_section %}{% endblock footer_javascript_section %}
+        {% block footer_javascript_page %}{% endblock footer_javascript_page %}
+    {% endblock footer_javascript %}
+</html>
