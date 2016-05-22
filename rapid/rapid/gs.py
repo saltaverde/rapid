@@ -46,7 +46,7 @@ class Geoserver():
 
             while lyr_name in lyr_names:
                 count += 1
-                lyr_name.replace('_' + str(count), '_' + str(count + 1))
+                lyr_name = lyr_name.replace('_' + str(count), '_' + str(count + 1))
 
             # Set appropriate values in the xml tree
             title.text = layer_state['descriptor']
