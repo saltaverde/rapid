@@ -741,4 +741,4 @@ def portal(request):
 
         context = {'username': user.username, 'STATIC_URL':STATIC_URL}
 
-        return render(request, 'portal/main.html', context)
+        return render(request, 'rapid/portal/main.html', context)
