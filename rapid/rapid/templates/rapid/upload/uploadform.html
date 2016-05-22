@@ -40,9 +40,9 @@
                         extension = extension[0].toUpperCase();
                     if (extension == 'ZIP' || extension == 'JSON') {
                         submit.disabled = false;
-                        form.action = '{{ STATIC_URL }}:8000/rapid/uploadFile/'
-                        token_input = document.getElementById('id_token')
-                        token_input.value = token
+                        form.action = 'http://127.0.0.1:3000/rapid/uploadFile/'
+                        //token_input = document.getElementById('id_token')
+                        //token_input.value = token
                     }
                     else {
                         input.value = '';

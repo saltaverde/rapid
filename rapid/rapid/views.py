@@ -4,8 +4,8 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.static import serve
 from django.template import RequestContext
 import os
-from .models import ApiToken
-from .forms import UploadFileForm, UserForm, UserProfileForm
+from rapid.models import *
+from rapid.forms import UploadFileForm, UserForm, UserProfileForm
 from django.shortcuts import render_to_response, render
 from rest_framework.renderers import JSONRenderer
 import urllib
@@ -14,7 +14,9 @@ from rapid.importer import Importer
 from rapid.select import *
 from rapid.helpers import *
 from django.contrib.auth.decorators import login_required
-from rapid.settings import STATIC_URL, BASE_URL
+from rapid.settings import STATIC_URL, BASE_URL, FEATURETYPE_XML_TEMPLATE_PATH, GEOSERVER_REST_ENDPOINT
+from rapid.geofence import *
+
 
 class JSONResponse(HttpResponse):
     """
@@ -26,8 +28,11 @@ class JSONResponse(HttpResponse):
         kwargs['content_type'] = 'application/json'
         super(JSONResponse, self).__init__(content, **kwargs)
 
-
 def get_token_key(request):
+    """
+    Returns the API token key (not uid) by way of the uid stored in the
+    Django request.session object
+    """
 
     token_key = ApiToken.objects.get(uid=request.session.get('token')).key
 
@@ -317,7 +322,6 @@ def removeLayerFromGeoview(request, geo_uid, layer_uid):
     else:
         return HttpResponse(json_error('Not permitted to edit GeoView.'))
 
-
 @csrf_exempt
 @login_required
 def features(request):
@@ -346,7 +350,7 @@ def features(request):
 
 @csrf_exempt
 @login_required
-def featuresFromURL(request, layerId):
+def fetchFromURL(request):
     user_token_key = get_token_key(request)
     data = DataOperator(user_token_key)
     importer = Importer(user_token_key)
@@ -409,7 +413,6 @@ def getFeature(request, feature_uid):
         return HttpResponse(json_error(message))
     return HttpResponse(json_error('ERROR: must POST, GET, or DELETE'))
 
-
 @csrf_exempt
 @login_required
 def getLayer(request, layer_uid):
@@ -447,7 +450,6 @@ def getLayer(request, layer_uid):
 def getTokens(request):
     json_resp = to_json(DataOperator().get_apitokens())
     return HttpResponse(json_resp)
-
 
 @csrf_exempt
 @login_required
@@ -507,8 +509,6 @@ def uploadFile(request):
         form = UploadFileForm()
         return HttpResponse(json_error('request.method != "POST"'))
 
-#@csrf_exempt
-@login_required
 def handle_uploaded_file(f, request, session):
     from rapid.settings import DROPBOX_DIR
 
@@ -546,28 +546,51 @@ def handle_uploaded_file(f, request, session):
     importer = Importer(user_token_key)
 
     if (ext.upper() == 'ZIP'):
-        importer.import_shapefile(file_path, layer_uid)
+        try:
+            importer.import_shapefile(file_path, layer_uid)
+        except:
+            data.delete_layer(layer_uid)
+            print "Shapefile import failed."
+            return
 
     if (ext.upper() == 'JSON'):
-        importer.import_geojson_file(file_path, layer_uid)
+        try:
+            importer.import_geojson_file(file_path, layer_uid)
+        except:
+            data.delete_layer(layer_uid)
+            print "GeoJSON import failed."
+            return
+
+    # Add featuretype to Geoserver
+    if create_featuretype(layer_uid) is None:
+        print 'WARNING: featureType {} was not successfully sent to Geoserver'.format(layer_uid)
+        return
+
+    if is_public == True:
+        addGeofenceRule('*', descriptor)
+    else:
+        username = ApiToken.objects.get(uid=session.get('token')).descriptor
+        addGeofenceRule(username, descriptor)
 
     return
-"""
-def uploadGeoview(request):
-    if request.method == 'POST':
-        form = UploadGeoviewForm(request.POST, request.FILES)
 
-        if form.is_valid():
-            handle_uploaded_Geoview(request.FILES['file'], request.POST, request.session)
-            context = {'form' : form, 'filename': request.FILES['file'].name, 'STATIC_URL':STATIC_URL}
-            return render(request, 'rapid/upload/uploadsuccess.html', context)
+def create_featuretype(uid):
+    import rapid.gs as GS
+
+    gs = GS.Geoserver()
+
+    ft = gs.createFeatureTypeFromUid(uid)
+
+    if ft is not None:
+        response = gs.sendFeatureType(ft)
+
+        if response.status_code == 201:
+            location = response.headers['Location']
+            return location
         else:
-            context = {'form' : form}
-            return render(request, 'rapid/upload/formerrors.html', context)
+            return None
     else:
-        form = UploadFileForm()
-        return HttpResponse(json_error('request.method != "POST"'))
-"""
+        return None
 
 def register(request):
 
@@ -597,6 +620,7 @@ def register(request):
 
             # Now we hash the password with the set_password method.
             # Once hashed, we can update the user object.
+            password = user.password
             user.set_password(user.password)
             user.save()
 
@@ -617,6 +641,10 @@ def register(request):
 
             # Now we save the UserProfile model instance.
             profile.save()
+
+            # Add user to Geofence for Geoserver authentication
+            # TODO: Where does email come from?
+            addGeofenceUser(user.username, password, None)
 
             # Update our variable to tell the template registration was successful.
             registered = True
@@ -668,11 +696,11 @@ def user_login(request):
                 # We'll send the user back to the homepage.
                 request.session.set_test_cookie()
                 login(request, user)
-                request.session.set_expiry(0)
+                request.session.set_expiry(300)
                 return HttpResponseRedirect('/rapid/portal/')
             else:
                 # An inactive account was used - no logging in!
-                return HttpResponse("Your RAPID account has been deactivated.  Please contact the RAPID administrator.")
+                return HttpResponse("Your RAPID account has been deactivated. Please contact your RAPID administrator.")
         else:
             # Bad login details were provided. So we can't log the user in.
             print "Invalid login details: {0}, {1}".format(username, password)
@@ -695,22 +723,4 @@ def user_logout(request):
 
     logout(request)
 
-    return HttpResponseRedirect('/rapid/login/')
-
-@login_required
-def portal(request):
-    from datetime import datetime
-
-    if request.session.test_cookie_worked():
-        user = request.user
-
-        token = request.session.get('token')
-        if not token:
-            token = user.userprofile.token.uid
-            request.session['token'] = token
-
-        request.session['last_visit_login'] = str(datetime.now())
-
-        context = {'username': user.username, 'STATIC_URL':STATIC_URL}
-
-        return render(request, 'rapid/portal/main.html', context)
+    return HttpResponseRedi

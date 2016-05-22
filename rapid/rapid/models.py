@@ -38,7 +38,7 @@ class GeoView(models.Model):
     geom = models.GeometryField(null=True)
     bbox = models.PolygonField(null=True)
     properties = models.TextField(null=True)
-    layers = models.ManyToManyField('DataLayer', null=True)
+    layers = models.ManyToManyField('DataLayer')
     is_public = models.BooleanField(default=False)
 
     # unpublished flags. workaround for including/excluding extra info in output
@@ -110,19 +110,26 @@ class DataLayer(models.Model):
     is_public = models.BooleanField(default=False)
 
     # unpublished flag. workaround for including/excluding extra info in output
-    include_features = models.NullBooleanField(null=True)
+    include_features = models.BooleanField(default=True)
 
     objects = models.GeoManager()
 
     def __getstate__(self):
         state = self.__dict__.copy()
-        # state['features'] = list(self.feature_set.all()[:1])
+        state['uid'] = self.uid
+
+        if self.feature_set.count() > 0:
+            state['geom_type'] = self.feature_set.all()[0].geom.geom_type
+        else:
+            state['geom_type'] = None
+
         if self.include_features:
-            # state['features'] = list(self.feature_set.all()[:1])
             state['features'] = list(self.feature_set.all().values_list('uid', flat=True))
             #need to add "include_range" to check for start and stop filter of features
+        else:
+            state['features'] = None
+
         del state['_state']
-        del state['include_features']
 
         return state
 
