@@ -723,4 +723,22 @@ def user_logout(request):
 
     logout(request)
 
-    return HttpResponseRedi
+    return HttpResponseRedirect('/rapid/login/')
+
+@login_required
+def portal(request):
+    from datetime import datetime
+
+    if request.session.test_cookie_worked():
+        user = request.user
+
+        token = request.session.get('token')
+        if not token:
+            token = user.userprofile.token.uid
+            request.session['token'] = token
+
+        request.session['last_visit_login'] = str(datetime.now())
+
+        context = {'username': user.username, 'STATIC_URL':STATIC_URL}
+
+        return render(request, 'portal/main.html', context)
