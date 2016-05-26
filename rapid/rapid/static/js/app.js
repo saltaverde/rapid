@@ -23,3 +23,4 @@ $(document).ready(function() {
     $('div#form-forgot-password-wrapper').toggle('500');
   });
 });
+
