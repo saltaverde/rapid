@@ -25,7 +25,7 @@ var refreshLayers = function () {
                                 return false;
 						    };
 						    button.value = 'Add';
-						var buttonText = document.createTextNode('Add to GeoView'); button.appendChild(buttonText);
+						var buttonText = document.createTextNode('Add'); button.appendChild(buttonText);
 						
 						var li = document.createElement("LI");
 						var public = '(public) ';

@@ -34,16 +34,27 @@
             {% endblock head_css_site %}
 
             {% block head_css_section %}{% endblock head_css_section %}
-
             {% block head_css_page %}{% endblock head_css_page %}
         {% endblock head_css %}
+
+        {% block head_javascript %}
+            {% block head_javascript_site %}
+                <script src="{{ STATIC_URL }}js/jquery-1.9.1.min.js"></script>
+                <script src="{{ STATIC_URL }}js/bootstrap.js"></script>
+                <script src="{{ STATIC_URL }}js/npm.js"></script>
+                <script src="{{ STATIC_URL }}js/app.js"></script>
+            {% endblock head_javascript_site %}
+            {% block head_javascript_section %}{% endblock head_javascript_section %}
+            {% block head_javascript_page %}{% endblock head_javascript_page %}
+        {% endblock head_javascript %}
+
     </head>
 
-    <body>
+    <body {% if request.get_full_path = "/rapid/portal/" %} onload='refreshLayers();' style="font-family: Tahoma" {% endif %} >
         <header>
             {# Navigation Menu #}
         </header>
-        <div class="container">
+        <div class="container-fluid">
             {% block content %}
                 IF YOU SEE THIS, SOMETHING IS WRONG!
             {% endblock content %}
@@ -53,15 +64,4 @@
             {# The Footer #}
         </footer>
     </body>
-
-    {% block footer_javascript %}
-        {% block footer_javascript_site %}
-            <script src="{{ STATIC_URL }}js/jquery-1.9.1.min.js"></script>
-            <script src="{{ STATIC_URL }}js/bootstrap.js"></script>
-            <script src="{{ STATIC_URL }}js/npm.js"></script>
-            <script src="{{ STATIC_URL }}js/app.js"></script>
-        {% endblock footer_javascript_site %}
-        {% block footer_javascript_section %}{% endblock footer_javascript_section %}
-        {% block footer_javascript_page %}{% endblock footer_javascript_page %}
-    {% endblock footer_javascript %}
 </html>
