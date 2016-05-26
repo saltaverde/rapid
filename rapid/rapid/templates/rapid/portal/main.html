@@ -1,40 +1,16 @@
-{% extends "base.html" %}
+<!DOCTYPE html>
 
-{% block title %}RAPID Portal: {{ username }}{% endblock title %}
+<html>
+  <head>
+	<title>RAPID Portal: {{ username }}</title>
 
-{% block head_css_page %}
-    <!-- Leaflet stuff -->
-    <link rel="stylesheet" href="{{ STATIC_URL }}js/libs/leaflet.css"/>
-
-    <!-- Leaflet.draw plugin stuff -->
-    <link rel="stylesheet" href="{{ STATIC_URL }}js/dist/leaflet.draw.css"/>
-
-    <!-- Layer control stuff -->
-	<link rel="stylesheet" href="{{ STATIC_URL }}css/styledLayerControl.css"/>
-
-    <style>
-        #map {
-            width:100%;
-            height:100vh;
-        }
-
-        .leaflet-google-layer{
-            z-index: 0;
-        }
-
-        .leaflet-map-pane{
-            z-index: 100;
-        }
-
-	</style>
-{% endblock head_css_page %}
-
-{% block head_javascript_page %}
     <!-- Leaflet stuff -->
     <script src="{{ STATIC_URL }}js/libs/leaflet-src.js"></script>
-
+	<link rel="stylesheet" href="{{ STATIC_URL }}js/libs/leaflet.css"/>
+	
 	<!-- Leaflet.draw plugin stuff -->
 	<script src="{{ STATIC_URL }}js/src/Leaflet.draw.js"></script>
+	<link rel="stylesheet" href="{{ STATIC_URL }}js/dist/leaflet.draw.css"/>
 
 	<script src="{{ STATIC_URL }}js/src/Toolbar.js"></script>
 	<script src="{{ STATIC_URL }}js/src/Tooltip.js"></script>
@@ -54,6 +30,7 @@
 	<script src="{{ STATIC_URL }}js/src/draw/handler/Draw.Polygon.js"></script>
 	<script src="{{ STATIC_URL }}js/src/draw/handler/Draw.Rectangle.js"></script>
 
+
 	<script src="{{ STATIC_URL }}js/src/edit/EditToolbar.js"></script>
 	<script src="{{ STATIC_URL }}js/src/edit/handler/EditToolbar.Edit.js"></script>
 	<script src="{{ STATIC_URL }}js/src/edit/handler/EditToolbar.Delete.js"></script>
@@ -65,180 +42,173 @@
 	<script src="{{ STATIC_URL }}js/src/edit/handler/Edit.Circle.js"></script>
 	<script src="{{ STATIC_URL }}js/src/edit/handler/Edit.Rectangle.js"></script>
 	<script src="{{ STATIC_URL }}js/src/edit/handler/Edit.Marker.js"></script>
-
+	
 	<!-- Layer control stuff -->
+	<link rel="stylesheet" href="{{ STATIC_URL }}css/styledLayerControl.css"/>
 	<script src="{{ STATIC_URL }}js/styledLayerControl.js"></script>
-
+	
 	<script src="http://maps.google.com/maps/api/js?v=3.2&sensor=false"></script>
-
+    
     <script src="{{ STATIC_URL }}js/plugins/leaflet-google.js"></script>
-
+   
+    
     <script src="{{ STATIC_URL }}js/geoViewHandler.js"></script>
     <script src="{{ STATIC_URL }}js/layerHandler.js"></script>
-{% endblock head_javascript_page %}
+    
 
+    <style>
+			#map {
+				width:100%;
+				height:600px;
+		    }
+		
+	        .leaflet-google-layer{
+				z-index: 0;
+			}
+		
+	        .leaflet-map-pane{
+				z-index: 100;
+			}
 
-{% block content %}
-    <div class="row">
-         <div class="col-lg-push-3 col-lg-9 col-md-push-3 col-md-9 col-sm-12" style="padding: 0">
-			<div id="map">
-				<!-- Map goes here -->
-			</div>
-		</div>
-        <div class="col-lg-pull-9 col-lg-3 col-md-pull-9 col-md-3 col-sm-12" style="padding: 0; height: 100vh; overflow-y:auto; box-shadow: rgba(120, 120, 120, 0.5) 0px 0px 10px 5px;">
-			<h4 style="text-align: center; margin-top: 20px;">
-                Welcome to RAPID
-            </h4>
+	</style>
+</head>
 
-            <hr>
+<body onload='refreshLayers();' style="font-family: Tahoma">
+  
+  <div id="map"></div>
+  <br>
+	<div id="message" style="width: 800px; height: 30px">Welcome to RAPID</div>
+	<br>
+	<button id='drawButton' onclick="map.addControl(drawControl); drawButton.disabled = true;">Draw GeoView</button>
 
-            <!--{% if user.is_authenticated %}-->
-               <!--<a href="/rapid/logout/">Log Out</a>-->
-            <!--{% endif %}-->
+	<button id='sendButton' onclick="addGeoView();" disabled>Send GeoView to RAPID</button>
+	<input id='input' type="text" value="" onkeyup='checkInput();' disabled>
+	<br>
 
-            <!--<hr>-->
+	<ul id='geoViewList' style='list-style-type: none; float: left'>
+		<li><h4>GeoViews</h4></li>
+	</ul>
+	<ul id='layerList' style='list-style-type: none; float: left'>
+		<li><h4>Available Layers</h4></li>
+	</ul>
 
-            <div id="message" style="font-size: 11px; text-align: center;"><span>Welcome to RAPID</span></div>
+    <br/>
+    {% if user.is_authenticated %}
+	   <a href="/rapid/upload/">Upload Data to Rapid</a>
+       <a href="/rapid/logout/">Log Out</a>
+    {% endif %}
 
-            <hr>
-
-            <div class="form-group" style="padding: 0 15px">
-                <button id='drawButton' class="btn btn-default btn-block" onclick="map.addControl(drawControl); drawButton.disabled = true;">Draw GeoView</button>
-            </div>
-            <div class="form-group" style="padding: 0 15px">
-                <button id='sendButton' class="btn btn-default btn-block" onclick="addGeoView();" disabled>Send GeoView to RAPID</button>
-            </div>
-            <input id='input' type="hidden" value="" onkeyup='checkInput();' disabled>
-
-            {% if user.is_authenticated %}
-                <div class="form-group" style="padding: 0 15px">
-                    <a class="btn btn-default btn-block" href="/rapid/upload/">Upload Data to Rapid</a>
-                </div>
-            {% endif %}
-
-            <!--<input id='input' type="text" value="" onkeyup='checkInput();' disabled>-->
-
-            <hr>
-
-            <ul id='geoViewList' style='list-style-type: none; float: left; font-size: 11px; padding: 0 15px; width: 100%;'>
-                <li><h5>GeoViews</h5></li>
-            </ul>
-
-            </br>
-
-            <ul id='layerList' style='list-style-type: none; float: left; font-size: 11px; padding: 0 15px; width: 100%;'>
-                <li><h4>Available Layers</h4></li>
-            </ul>
-        </div>
-    </div>
-
+   	<script src="{{ STATIC_URL }}js/jquery-1.9.1.min.js"></script>
     <script src="{{ STATIC_URL }}js/request.js"></script>
+    
+	  <script>
 
-    <script>
+				// Google layers
+				var g_roadmap   = new L.Google('GOOGLE ROADMAP');
+				var g_satellite = new L.Google('GOOGLE SATELLITE');
+				var g_terrain   = new L.Google('GOOGLE TERRAIN');
 
-        // Google layers
-        var g_roadmap   = new L.Google('ROADMAP');
-        var g_satellite = new L.Google('SATELLITE');
-        var g_terrain   = new L.Google('TERRAIN');
+				// OSM layers
+				/*var osmUrl='http://{s}.tile.osm.org/{z}/{x}/{y}.png';
+				var osmAttrib='Map data © <a href="http://openstreetmap.org">OpenStreetMap</a> contributors';
+				var osm = new L.TileLayer(osmUrl, {attribution: osmAttrib});*/
 
-        // OSM layers
-        /*var osmUrl='http://{s}.tile.osm.org/{z}/{x}/{y}.png';
-        var osmAttrib='Map data © <a href="http://openstreetmap.org">OpenStreetMap</a> contributors';
-        var osm = new L.TileLayer(osmUrl, {attribution: osmAttrib});*/
+				// Map starting attributes
+				var map = L.map('map', {
+					center: [39.224087, -98.542152],
+					zoom: 4
+				});
 
-        // Map starting attributes
-        var map = L.map('map', {
-            center: [39.224087, -98.542152],
-            zoom: 4
-        });
-
-        // Tile layer for map to use
-        map.addLayer(g_roadmap);
-
-
-        var baseMaps = [
-                        {
-                            groupName : "Base Maps",
-                            expanded : false,
-                            layers    : {
-                                "Satellite" :  g_satellite,
-                                "Road Map"  :  g_roadmap,
-                                "Terrain"   :  g_terrain
-                            }
-                        }
-        ];
-
-        var overlays = [];
-
-        var options = {
-            container_width 	: "300px",
-            group_maxHeight     : "80px",
-            //container_maxHeight : "350px",
-            exclusive       	: false
-        };
-
-        loadGUI();
-
-        var geoViews = {};
-
-    </script>
-
-    <script>
-
-        var sendButton = document.getElementById('sendButton');
-        var messageDiv = document.getElementById("message");
-        var drawButton = document.getElementById('drawButton');
-        var geoViewList = document.getElementById('geoViewList');
-        var layerList = document.getElementById('layerList');
-        var input = document.getElementById('input');
-
-        messageDiv.innerHTML = "Click \'Draw GeoView\' to specify an area of interest.";
-
-        var drawnItems = L.featureGroup().addTo(map);
-
-        var drawControl = new L.Control.Draw({
-            edit: { featureGroup: drawnItems }
-        })
-
-        map.on('draw:created', function(event) {
-            var layer = event.layer;
-
-            drawnItems.addLayer(layer);
-
-            if (drawnItems.getLayers().length == 1) {
-                sendButton.disabled = false;
-                input.disabled = false;
-                messageDiv.innerHTML = 'Enter a descriptor for the GeoView';
-            }
-            else {
-                sendButton.disabled = true;
-                input.disabled = true;
-                messageDiv.innerHTML = 'Only one feature can be sent to a GeoView.'
-            }
-        });
-
-        map.on('draw:deleted', function(event) {
-
-            if (drawnItems.getLayers().length == 1) {
-                sendButton.disabled = false;
-                input.disabled = false;
-                messageDiv.innerHTML = 'Enter a descriptor for the GeoView';
-            }
-            else if (drawnItems.getLayers().length == 0) {
-                sendButton.disabled = true;
-                input.disabled = true;
-                messageDiv.innerHTML = 'Please draw a GeoView.'
-            }
-            else {
-                sendButton.disabled = true;
-                input.disabled = true;
-                messageDiv.innerHTML = 'Only one feature can be sent to a GeoView.'
-            }
-        });
-
-    </script>
-
-{% endblock content %}
+				// Tile layer for map to use
+				map.addLayer(g_roadmap);
 
 
+				var baseMaps = [
+								{ 
+									groupName : "Base Maps",
+									expanded : false,
+									layers    : {
+										"Satellite" :  g_satellite,
+										"Road Map"  :  g_roadmap,
+										"Terrain"   :  g_terrain
+									}
+								}
+				];
+
+				var overlays = [];
+
+				var options = {
+					container_width 	: "300px",
+					group_maxHeight     : "80px",
+					//container_maxHeight : "350px", 
+					exclusive       	: false
+				};
+
+				loadGUI();
+
+				var geoViews = {};
+
+		</script>
+
+		<script>
+
+		var sendButton = document.getElementById('sendButton');
+		var messageDiv = document.getElementById("message");
+		var drawButton = document.getElementById('drawButton');
+		var geoViewList = document.getElementById('geoViewList');
+		var layerList = document.getElementById('layerList');
+		var input = document.getElementById('input');
+
+		messageDiv.innerHTML = "Click \'Draw GeoView\' to specify an area of interest.";
+
+		var drawnItems = L.featureGroup().addTo(map);
+
+		var drawControl = new L.Control.Draw({
+			edit: { featureGroup: drawnItems }
+		})
+
+		map.on('draw:created', function(event) {
+			var layer = event.layer;
+
+			drawnItems.addLayer(layer);
+
+			if (drawnItems.getLayers().length == 1) {
+				sendButton.disabled = false;
+				input.disabled = false;
+				messageDiv.innerHTML = 'Enter a descriptor for the GeoView';
+			}
+			else {
+				sendButton.disabled = true;
+				input.disabled = true;
+				messageDiv.innerHTML = 'Only one feature can be sent to a GeoView.'
+			}
+		});
+
+		map.on('draw:deleted', function(event) {
+		
+			if (drawnItems.getLayers().length == 1) {
+				sendButton.disabled = false;
+				input.disabled = false;
+				messageDiv.innerHTML = 'Enter a descriptor for the GeoView';
+			}
+			else if (drawnItems.getLayers().length == 0) {
+				sendButton.disabled = true;
+				input.disabled = true;
+				messageDiv.innerHTML = 'Please draw a GeoView.'
+			}
+			else {
+				sendButton.disabled = true;
+				input.disabled = true;
+				messageDiv.innerHTML = 'Only one feature can be sent to a GeoView.'
+			}
+		});
+
+	</script>
+
+	
+
+   
+    
+</body>
+</html>
 
