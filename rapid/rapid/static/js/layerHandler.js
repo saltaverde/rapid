@@ -18,17 +18,14 @@ var refreshLayers = function () {
 						var liDiv = document.createElement("DIV");
 						var button = document.createElement("BUTTON");
 						    button.type = 'button';
-						    button.id = uid + '_add'; 
-                            button.style.float = 'right';
-                            button.className = 'btn btn-default btn-xs';
+						    button.id = uid + '_add'; button.style.float = 'right';
 						    button.onclick = function () {
                                 getGeoViewInput(uid);
                                 button.disabled = true;
                                 return false;
 						    };
 						    button.value = 'Add';
-						var buttonText = document.createTextNode('Add');
-                        button.appendChild(buttonText);
+						var buttonText = document.createTextNode('Add to GeoView'); button.appendChild(buttonText);
 						
 						var li = document.createElement("LI");
 						var public = '(public) ';
@@ -37,7 +34,7 @@ var refreshLayers = function () {
 						}
 						var descriptor = document.createTextNode(existingLayers[i].descriptor + " " + public);
 						var uid = existingLayers[i].uid;
-						liDiv.id = uid + '_layer'; liDiv.style.width = '100%'; liDiv.style.display = 'inline-block'; liDiv.style.marginBottom = '5px';
+						liDiv.id = uid + '_layer'; liDiv.style.width = '400px'; liDiv.style.display = 'inline-block'; liDiv.style.marginBottom = '5px';
 						li.appendChild(liDiv).appendChild(descriptor);
 						liDiv.appendChild(button);
 						layerList.appendChild(li);
