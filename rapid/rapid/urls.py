@@ -56,5 +56,7 @@ urlpatterns = patterns('rapid.views',
     url(r'^rapid/layer/(?P<layer_uid>[\w]+)/remove/owner/(?P<token_uid>[\w]+)/$', 'removeLayerOwner'),
     url(r'^rapid/layer/(?P<layer_uid>[\w]+)/remove/editor/(?P<token_uid>[\w]+)/$', 'removeLayerEditor'),
     url(r'^rapid/layer/(?P<layer_uid>[\w]+)/remove/viewer/(?P<token_uid>[\w]+)$', 'removeLayerViewer'),
+
+    url(r'^rapid/geoserverlayers/(?P<username>[\w]+)$', 'getGeoserverLayers')
 ############################################
 )
