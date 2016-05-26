@@ -94,24 +94,6 @@ def getGeofenceRules(username=None):
     Returns an ElementTree xml object of rules associated only with the user.
     """
 
-    response = requests.get(GEOFENCE_RULES_URL)
+    response = requests.get(GEOFENCE_RULES_URL + '?userName=' + username)
 
-    if response.status_code == 200:
-        xml_root = ET.fromstring(response.content)
-        xml_out = ET.Element('RuleList')
-
-    else:
-        return None
-
-    if username is not None:
-        for rule in xml_root.iter('rule'):
-            rule_username = rule.find('username')
-            if rule_username is not None:
-                if rule_username.text == username:
-                    xml_out.append(rule)
-
-
-        return xml_out
-
-    else:
-        return None
+    return response

@@ -1,22 +1,30 @@
+import os
+
 from django.contrib.gis.geos import GEOSGeometry
 from django.http import HttpResponse, HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
 from django.views.static import serve
 from django.template import RequestContext
-import os
-from rapid.models import *
-from rapid.forms import UploadFileForm, UserForm, UserProfileForm
 from django.shortcuts import render_to_response, render
-from rest_framework.renderers import JSONRenderer
-import urllib
-import json
+from django.contrib.auth.decorators import login_required
+
 from rapid.importer import Importer
 from rapid.select import *
 from rapid.helpers import *
-from django.contrib.auth.decorators import login_required
-from rapid.settings import STATIC_URL, BASE_URL, FEATURETYPE_XML_TEMPLATE_PATH, GEOSERVER_REST_ENDPOINT
+from rapid.models import *
 from rapid.geofence import *
+from rapid.forms import UploadFileForm, UserForm, UserProfileForm
+from rapid.settings import STATIC_URL, BASE_URL, FEATURETYPE_XML_TEMPLATE_PATH, GEOSERVER_REST_ENDPOINT
 
+from rest_framework.renderers import JSONRenderer
+
+import urllib
+
+import json
+
+import xml.etree.ElementTree as ET
+
+import pprint
 
 class JSONResponse(HttpResponse):
     """
@@ -480,6 +488,39 @@ def getGeoview(request, geo_uid):
         message = "Deleted GeoView with uid " + str(geo_uid)
         return HttpResponse(json_error(message))
     return HttpResponse(json_error('ERROR: must GET or DELETE GeoViews'))
+
+@csrf_exempt
+def getGeoserverLayers(request, username):
+
+    if username is not None:
+        try:
+            response = getGeofenceRules(username)
+        except:
+            print "Exception encountered when fetching rules: " + e
+            return
+
+        if response.status_code == 200:
+            rules = []
+            ruleList = ET.fromstring(response.content)
+            ruleList.remove(ruleList._children[-1])  # Clear out the catchall "DENY" rule
+
+            for rule in ruleList.findall('rule'):
+                to_add = {}
+                to_add['id'] = rule.find('id').text
+                to_add['grant'] = rule.attrib['grant']
+                to_add['layer'] = rule.find('layer').text
+                # to_add['request'] = rule.find('request').text
+                to_add['workspace'] = rule.find('workspace').text
+
+                rules.append(to_add)
+
+            return HttpResponse(to_json(rules), content_type='application/json')
+
+        else:
+            return HttpResponse(json_error('ERROR: request for rules returned status code ' + str(response.status_code)))
+
+    return HttpResponse(json_error('ERROR: no username provided'))
+
 
 @csrf_exempt
 @login_required
