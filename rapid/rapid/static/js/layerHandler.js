@@ -42,6 +42,7 @@ var refreshLayers = function () {
 						liDiv.appendChild(button);
 						layerList.appendChild(li);
 					}
+                    layerList.appendChild(document.createElement("LI")).appendChild(document.createElement("HR"));
 				}
 
     		}
