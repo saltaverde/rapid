@@ -90,7 +90,7 @@
                 Welcome to RAPID
             </h4>
 
-            <hr>
+            <hr style="padding: 0 15px;">
 
             <!--{% if user.is_authenticated %}-->
                <!--<a href="/rapid/logout/">Log Out</a>-->
@@ -100,7 +100,17 @@
 
             <div id="message" style="font-size: 11px; text-align: center;"><span>Welcome to RAPID</span></div>
 
-            <hr>
+            <hr style="padding: 0 15px;">
+
+            <ul id='geoViewList' style='list-style-type: none; float: left; font-size: 11px; padding: 0 15px; width: 100%;'>
+                <li><h5>GeoViews</h5></li>
+            </ul>
+
+            <br/>
+
+            <ul id='layerList' style='list-style-type: none; float: left; font-size: 11px; padding: 0 15px; width: 100%;'>
+                <li><h4>Available Layers</h4></li>
+            </ul>
 
             <div class="form-group" style="padding: 0 15px">
                 <button id='drawButton' class="btn btn-default btn-block" onclick="map.addControl(drawControl); drawButton.disabled = true;">Draw GeoView</button>
@@ -115,20 +125,6 @@
                     <a class="btn btn-default btn-block" href="/rapid/upload/">Upload Data to Rapid</a>
                 </div>
             {% endif %}
-
-            <!--<input id='input' type="text" value="" onkeyup='checkInput();' disabled>-->
-
-            <hr>
-
-            <ul id='geoViewList' style='list-style-type: none; float: left; font-size: 11px; padding: 0 15px; width: 100%;'>
-                <li><h5>GeoViews</h5></li>
-            </ul>
-
-            </br>
-
-            <ul id='layerList' style='list-style-type: none; float: left; font-size: 11px; padding: 0 15px; width: 100%;'>
-                <li><h4>Available Layers</h4></li>
-            </ul>
         </div>
     </div>
 
