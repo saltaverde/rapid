@@ -43,8 +43,15 @@ def get_token_key(request):
     Returns the API token key (not uid) by way of the uid stored in the
     Django request.session object
     """
-
-    token_key = ApiToken.objects.get(uid=request.session.get('token')).key
+    try:
+        token_key = ApiToken.objects.get(uid=request.session.get('token')).key
+    except:
+        if request.GET.get('token'):
+            token_key = request.GET.get('token')
+        elif request.POST.get('token'):
+            token_key = request.POST.get('token')
+            
+    #TODO: take away the except portion for production
 
     return token_key
 
