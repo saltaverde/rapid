@@ -127,7 +127,7 @@ class DataOperator(object):
 
     def get_layers(self):
         return [lyr for lyr in DataLayer.objects.all() if self.has_layer_permissions(lyr.uid, Role.VIEWER)]
-    
+
     def get_layer(self, uid):
         layer = DataLayer.objects.filter(uid=uid)
         return layer[0]
