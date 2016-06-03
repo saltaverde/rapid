@@ -7,6 +7,8 @@ from rapid.select import *
 from rapid.helpers import *
 from rapid.models import *
 from rapid.importer import *
+from rapid.views import create_featuretype
+from rapid.geofence import *
 
 class Command(BaseCommand):
 
@@ -341,6 +343,8 @@ class Command(BaseCommand):
             r = requests.delete('{0}/layer/{1}'.format(base_endpoint, layer['uid']), params=token_params)
             print r.json()
         elif response == '4':
+
+
             for root, dirnames, filenames in os.walk('data/dropbox'):
                 files = []
                 for filename in fnmatch.filter(filenames, '*.zip'):
@@ -362,6 +366,18 @@ class Command(BaseCommand):
                     importer = Importer(token_key)
                     print 'Importing...'
                     importer.import_shapefile(files[choice], layer['uid'])
+
+                    # Add featuretype to Geoserver
+                    if create_featuretype(layer['uid']) is None:
+                        print 'WARNING: featureType {} was not successfully sent to Geoserver'.format(layer_uid)
+                        return
+
+                    if is_public == True:
+                        addGeofenceRule('*', descriptor)
+                    else:
+                        username = ApiToken.objects.get(key=token_key).descriptor
+                        addGeofenceRule(username, descriptor)
+
                     print 'Done.'
                 else:
                     print 'Invalid choice.'
