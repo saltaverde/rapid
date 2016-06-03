@@ -1,4 +1,5 @@
 import os
+import json
 
 from django.contrib.gis.geos import GEOSGeometry
 from django.http import HttpResponse, HttpResponseRedirect
@@ -7,6 +8,7 @@ from django.views.static import serve
 from django.template import RequestContext
 from django.shortcuts import render_to_response, render
 from django.contrib.auth.decorators import login_required
+from django.core.serializers import serialize
 
 from rapid.importer import Importer
 from rapid.select import *
@@ -48,7 +50,7 @@ def get_token_key(request):
 
 
 @csrf_exempt
-@login_required
+#@login_required
 def layers(request):
     message = ''
     descriptor = None
@@ -104,7 +106,7 @@ def layers(request):
 
 
 @csrf_exempt
-@login_required
+#@login_required
 def geoviews(request):
     message = ''
     geometry = None
@@ -157,7 +159,7 @@ def geoviews(request):
     return HttpResponse(message)
 
 @csrf_exempt
-@login_required
+#@login_required
 def addGeoViewOwner(request, geo_uid, token_uid):
     user_token_key = get_token_key(request)
     data = DataOperator(user_token_key)
@@ -170,7 +172,7 @@ def addGeoViewOwner(request, geo_uid, token_uid):
         return HttpResponse(json_error('Not permitted to edit GeoView.'))
 
 @csrf_exempt
-@login_required
+#@login_required
 def addGeoViewEditor(request, geo_uid, token_uid):
     user_token_key = get_token_key(request)
     data = DataOperator(user_token_key)
@@ -183,7 +185,7 @@ def addGeoViewEditor(request, geo_uid, token_uid):
         return HttpResponse(json_error('Not permitted to edit GeoView.'))
 
 @csrf_exempt
-@login_required
+#@login_required
 def addGeoViewViewer(request, geo_uid, token_uid):
     user_token_key = get_token_key(request)
     data = DataOperator(user_token_key)
@@ -196,7 +198,7 @@ def addGeoViewViewer(request, geo_uid, token_uid):
         return HttpResponse(json_error('Not permitted to edit GeoView.'))
 
 @csrf_exempt
-@login_required
+#@login_required
 def addLayerOwner(request, layer_uid, token_uid):
     user_token_key = get_token_key(request)
     data = DataOperator(user_token_key)
@@ -209,7 +211,7 @@ def addLayerOwner(request, layer_uid, token_uid):
         return HttpResponse(json_error('Not permitted to edit layer.'))
 
 @csrf_exempt
-@login_required
+#@login_required
 def addLayerEditor(request, layer_uid, token_uid):
     user_token_key = get_token_key(request)
     data = DataOperator(user_token_key)
@@ -222,7 +224,7 @@ def addLayerEditor(request, layer_uid, token_uid):
         return HttpResponse(json_error('Not permitted to edit layer.'))
 
 @csrf_exempt
-@login_required
+#@login_required
 def addLayerViewer(request, layer_uid, token_uid):
     user_token_key = get_token_key(request)
     data = DataOperator(user_token_key)
@@ -235,7 +237,7 @@ def addLayerViewer(request, layer_uid, token_uid):
         return HttpResponse(json_error('Not permitted to edit layer.'))
 
 @csrf_exempt
-@login_required
+#@login_required
 def removeGeoViewOwner(request, geo_uid, token_uid):
     user_token_key = get_token_key(request)
     data = DataOperator(user_token_key)
@@ -247,7 +249,7 @@ def removeGeoViewOwner(request, geo_uid, token_uid):
         return HttpResponse(json_error('Not permitted to edit GeoView.'))
 
 @csrf_exempt
-@login_required
+#@login_required
 def removeGeoViewEditor(request, geo_uid, token_uid):
     user_token_key = get_token_key(request)
     data = DataOperator(user_token_key)
@@ -259,7 +261,7 @@ def removeGeoViewEditor(request, geo_uid, token_uid):
         return HttpResponse(json_error('Not permitted to edit GeoView.'))
 
 @csrf_exempt
-@login_required
+#@login_required
 def removeGeoViewViewer(request, geo_uid, token_uid):
     user_token_key = get_token_key(request)
     data = DataOperator(user_token_key)
@@ -271,7 +273,7 @@ def removeGeoViewViewer(request, geo_uid, token_uid):
         return HttpResponse(json_error('Not permitted to edit GeoView.'))
 
 @csrf_exempt
-@login_required
+#@login_required
 def removeLayerOwner(request, layer_uid, token_uid):
     user_token_key = get_token_key(request)
     data = DataOperator(user_token_key)
@@ -283,7 +285,7 @@ def removeLayerOwner(request, layer_uid, token_uid):
         return HttpResponse(json_error('Not permitted to edit Layer.'))
 
 @csrf_exempt
-@login_required
+#@login_required
 def removeLayerEditor(request, layer_uid, token_uid):
     user_token_key = get_token_key(request)
     data = DataOperator(user_token_key)
@@ -295,7 +297,7 @@ def removeLayerEditor(request, layer_uid, token_uid):
         return HttpResponse(json_error('Not permitted to edit Layer.'))
 
 @csrf_exempt
-@login_required
+#@login_required
 def removeLayerViewer(request, layer_uid, token_uid):
     user_token_key = get_token_key(request)
     data = DataOperator(user_token_key)
@@ -307,7 +309,7 @@ def removeLayerViewer(request, layer_uid, token_uid):
         return HttpResponse(json_error('Not permitted to edit Layer.'))
 
 @csrf_exempt
-@login_required
+#@login_required
 def addLayerToGeoview(request, geo_uid, layer_uid):
     user_token_key = get_token_key(request)
     data = DataOperator(user_token_key)
@@ -319,7 +321,7 @@ def addLayerToGeoview(request, geo_uid, layer_uid):
         return HttpResponse(json_error('Not permitted to edit GeoView.'))
 
 @csrf_exempt
-@login_required
+#@login_required
 def removeLayerFromGeoview(request, geo_uid, layer_uid):
     user_token_key = get_token_key(request)
     data = DataOperator(user_token_key)
@@ -331,7 +333,7 @@ def removeLayerFromGeoview(request, geo_uid, layer_uid):
         return HttpResponse(json_error('Not permitted to edit GeoView.'))
 
 @csrf_exempt
-@login_required
+#@login_required
 def features(request):
     user_token_key = get_token_key(request)
     data = DataOperator(user_token_key)
@@ -357,7 +359,7 @@ def features(request):
     return HttpResponse(json_error('Must POST a feature to this endpoint'))
 
 @csrf_exempt
-@login_required
+#@login_required
 def fetchFromURL(request):
     user_token_key = get_token_key(request)
     data = DataOperator(user_token_key)
@@ -379,7 +381,7 @@ def fetchFromURL(request):
     return HttpResponse(json_error('must GET'))
 
 @csrf_exempt
-@login_required
+#@login_required
 def getFeature(request, feature_uid):
     user_token_key = get_token_key(request)
     data = DataOperator(user_token_key)
@@ -422,7 +424,7 @@ def getFeature(request, feature_uid):
     return HttpResponse(json_error('ERROR: must POST, GET, or DELETE'))
 
 @csrf_exempt
-@login_required
+#@login_required
 def getLayer(request, layer_uid):
     user_token_key = get_token_key(request)
     data = DataOperator(user_token_key)
@@ -454,13 +456,13 @@ def getLayer(request, layer_uid):
     return HttpResponse(json_error('ERROR: must GET or DELETE'))
 
 @csrf_exempt
-@login_required
+#@login_required
 def getTokens(request):
     json_resp = to_json(DataOperator().get_apitokens())
     return HttpResponse(json_resp)
 
 @csrf_exempt
-@login_required
+#@login_required
 def getGeoview(request, geo_uid):
 
     user_token_key = get_token_key(request)
@@ -488,6 +490,21 @@ def getGeoview(request, geo_uid):
         message = "Deleted GeoView with uid " + str(geo_uid)
         return HttpResponse(json_error(message))
     return HttpResponse(json_error('ERROR: must GET or DELETE GeoViews'))
+"""
+def getFeaturesInGeoview(request, geo_uid):
+
+    user_token_key = get_token_key(request)
+    data = DataOperator(user_token_key)
+
+    if request.method == 'GET':
+        if not data.has_geoview_permissions(geo_uid, Role.VIEWER):
+            return HttpResponse(json_error('No viewing permissions for this GeoView.'))
+
+        gv = data.get_geoview(geo_uid)
+
+        layers =
+"""
+
 
 @csrf_exempt
 def getGeoserverLayers(request, username):
