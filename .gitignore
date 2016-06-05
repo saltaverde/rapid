@@ -5,5 +5,4 @@ rapid/conf
 rapid/manage.py
 *__init__.py
 rapid/rapid/wsgi.py
-.gitignore
 rapid/ui_error_log.txt
