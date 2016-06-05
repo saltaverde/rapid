@@ -48,6 +48,7 @@ def addGeofenceRule(username=None, layer=None, grant='ALLOW'):
         xml_root.remove(xml_root.find('username'))
 
     if layer is not None:
+        layer = layer.replace(' ', '_').lower()
         xml_root.find('layer').text = layer
     else:
         xml_root.remove(xml_root.find('layer'))

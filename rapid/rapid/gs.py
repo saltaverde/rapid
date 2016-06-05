@@ -4,6 +4,7 @@ from rapid.models import *
 from geoserver.catalog import Catalog
 import requests
 import os
+import pdb
 
 class Geoserver():
     def __init__(self):
@@ -13,6 +14,7 @@ class Geoserver():
         """
         Returns an XML formatted string used to post to the Geoserver REST API
         """
+        pdb.set_trace()
         try:
             layer_state = DataLayer.objects.get(uid=uid).__getstate__()
         except:
@@ -37,6 +39,7 @@ class Geoserver():
             tableName = metadata.find('entry').find('virtualTable').find('name')
             sqlView = metadata.find('entry').find('virtualTable').find('sql')
             geomType = metadata.find('entry').find('virtualTable').find('geometry').find('type')
+            sridElem = metadata.find('entry').find('virtualTable').find('geometry').find('srid')
 
             # Check for duplicate layer names and append a count number for disambiguation
             count = 2
@@ -51,6 +54,7 @@ class Geoserver():
             # Set appropriate values in the xml tree
             title.text = layer_state['descriptor']
             tableName.text = lyr_name
+            sridElem.text = layer_state['srid']
 
             if name is not None:
                 name.text = tableName.text

@@ -1,11 +1,15 @@
 from django.contrib.gis.geos import GEOSGeometry, Point
 from django.contrib.gis.gdal import DataSource as GdalDataSource
-import geojson
-import urllib2
+from django.contrib.gis.gdal import SpatialReference
+
 from rapid.helpers import *
 from rapid.models import *
 from rapid.select import *
 from rapid.settings import TEMP_DATA_DIR
+
+import geojson
+import urllib2
+import pdb
 
 class Importer(object):
     def __init__(self, token_key=None):
@@ -75,7 +79,7 @@ class Importer(object):
                 prj_matches.append(os.path.join(root, filename))
 
         if len(shp_matches) == 0:
-            raise Exception('Unable to read Shapefile (.shp file not found in archive)')
+            raise Exception('Unable to read Shapefile (No .shp file not found in archive)')
 
         shp_location = shp_matches[0]
 
@@ -83,13 +87,44 @@ class Importer(object):
 
         if len(prj_matches) > 0:
             ds = GdalDataSource(shp_location)
-            lyrs = [lyr for lyr in ds]
-            srid = lyrs[0].srs.srid
+            lyr = ds[0]
+            srs = SpatialReference(lyr.srs.proj4)
+            srid = srs['AUTHORITY', 1]
 
         if srid is None:
-            print "Unable to locate EPSG for %s. Using 4326.".format(lyrs[0].srs.name)
+            print "Unable to locate EPSG authority code for {0}. Using 4326.".format(lyrs[0].srs.name)
             srid = 4326
 
+        # update srid in DB
+        layer.srid = srid
+        layer.save()
+
+        # ct = CoordTransform(srs, SpatialReference('WGS84'))
+        if lyr.num_feat > 0:
+            for feat in lyr:
+                properties = {}
+
+                for field in feat.fields:
+                    temp = feat.get(field)
+                    if type(data) is str:
+                        if data.isspace():
+                            properties[field] = None
+                        else:
+                            properties[field] = temp
+                    else:
+                        properties[field] = temp
+
+                geom = GEOSGeometry(feat.geom.wkt)
+                properties = to_json(properties)
+
+                data.create_feature(geom, layer=layer, properties=properties)
+
+        else:
+            print 'No data imported. The Shapefile {0} has no records (features).'.format(shp_location)
+
+        return
+
+'''
         sf = shapefile.Reader(shp_location)
 
         if sf.numRecords > 0:
@@ -129,6 +164,4 @@ class Importer(object):
                 properties = to_json(properties)
 
                 data.create_feature(geom, layer=layer, properties=properties)
-
-        else:
-            print "No data imported. The shapefile has no records (features)."
+'''

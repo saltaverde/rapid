@@ -147,6 +147,8 @@ class DataOperator(object):
 
     def delete_layer(self, uid):
         try:
+            for feature in DataLayer.objects.get(uid=uid):
+                Feature.objects.get(uid=feature.uid).delete()
             DataLayer.objects.get(uid=uid).delete()
             return True
         except:

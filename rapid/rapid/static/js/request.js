@@ -2,7 +2,8 @@ var Request = {
     // Constant webpage endpoints
     TO_FEATURE: "/rapid/feature/",
     TO_LAYER: "/rapid/layer/",
-    TO_GEOVIEW: "/rapid/geoview/"
+    TO_GEOVIEW: "/rapid/geoview/",
+    TO_BASE: "/rapid/"
 }; 
 
 var geoViewStyle = {
@@ -62,7 +63,20 @@ function getGeoview(geoViewText, getLayers) {
         geoViewListElementDiv.id = view.uid;
         //geoViewListElementDiv.class = 'geoViewListElement';
         var descriptor = document.createTextNode(view.descriptor);
+        var showIntersectingFeatures = document.createElement("BUTTON");
+						    showIntersectingFeatures.type = 'button';
+						    showIntersectingFeatures.id = view.uid + '_add';
+                            showIntersectingFeatures.style.float = 'right';
+                            showIntersectingFeatures.className = 'btn btn-default btn-xs';
+						    showIntersectingFeatures.onclick = function () {
+                                getFeaturesInGeoview(view.uid);
+                                return false;
+						    };
+						    showIntersectingFeatures.value = 'Get Features';
+                        var buttonText = document.createTextNode('Show Features');
+                            showIntersectingFeatures.appendChild(buttonText);
         geoViewListElement.appendChild(descriptor);
+        geoViewListElement.appendChild(showIntersectingFeatures);
         var ul = document.createElement("UL");
         ul.id = view.uid + '_layers';
 
@@ -150,6 +164,16 @@ function ajaxCall(address, callback) {
         }
     });
     return response;
+}
+
+function getFeaturesInGeoview(uid) {
+    var response = $.ajax({
+       url: Request.TO_BASE + 'allgeoviewfeatures/' + uid,
+       dataType: 'json',
+       success: function (data) {
+           L.geoJson(data).addTo(map);
+       }
+    })
 }
 
 function loadGUI() {

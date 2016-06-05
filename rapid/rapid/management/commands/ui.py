@@ -1,6 +1,7 @@
 from django.core.management import BaseCommand
 import time
 from datetime import timedelta
+import pdb
 
 from rapid.exporter import Exporter
 from rapid.select import *
@@ -325,6 +326,7 @@ class Command(BaseCommand):
                 else:
                     print 'Invalid option.'
             pass
+
         elif response == '2':
             # response = raw_input('Only export recent data from last 7 days (\'y\' or \'n\'): ').strip()
             #
@@ -339,12 +341,12 @@ class Command(BaseCommand):
             except Exception, e:
                 log_exception(e)
                 print 'There was an error during export.'
+
         elif response == '3':
             r = requests.delete('{0}/layer/{1}'.format(base_endpoint, layer['uid']), params=token_params)
             print r.json()
+
         elif response == '4':
-
-
             for root, dirnames, filenames in os.walk('data/dropbox'):
                 files = []
                 for filename in fnmatch.filter(filenames, '*.zip'):
@@ -366,17 +368,20 @@ class Command(BaseCommand):
                     importer = Importer(token_key)
                     print 'Importing...'
                     importer.import_shapefile(files[choice], layer['uid'])
-
+                    pdb.set_trace()
                     # Add featuretype to Geoserver
-                    if create_featuretype(layer['uid']) is None:
-                        print 'WARNING: featureType {} was not successfully sent to Geoserver'.format(layer_uid)
+                    lyr_name = create_featuretype(layer['uid'])
+                    if lyr_name is None:
+                        print 'WARNING: featureType {0} was not successfully sent to Geoserver'.format(layer_uid)
                         return
 
-                    if is_public == True:
-                        addGeofenceRule('*', descriptor)
+                    pdb.set_trace()
+
+                    if layer['is_public'] == True:
+                        addGeofenceRule('*', lyr_name)
                     else:
                         username = ApiToken.objects.get(key=token_key).descriptor
-                        addGeofenceRule(username, descriptor)
+                        addGeofenceRule(username, lyr_name)
 
                     print 'Done.'
                 else:

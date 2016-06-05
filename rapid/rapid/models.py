@@ -108,6 +108,7 @@ class DataLayer(models.Model):
     descriptor = models.TextField()
     properties = models.TextField(null=True)
     is_public = models.BooleanField(default=False)
+    srid = models.TextField(null=True)
 
     # unpublished flag. workaround for including/excluding extra info in output
     include_features = models.BooleanField(default=True)
@@ -128,6 +129,8 @@ class DataLayer(models.Model):
             #need to add "include_range" to check for start and stop filter of features
         else:
             state['features'] = None
+
+        state['srid'] = self.srid
 
         del state['_state']
 

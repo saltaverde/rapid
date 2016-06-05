@@ -21,7 +21,7 @@
         <geometry>
           <name>geom</name>
           <type></type>
-          <srid>4326</srid>
+          <srid></srid>
         </geometry>
       </virtualTable>
     </entry>

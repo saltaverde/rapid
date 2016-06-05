@@ -497,9 +497,9 @@ def getGeoview(request, geo_uid):
         message = "Deleted GeoView with uid " + str(geo_uid)
         return HttpResponse(json_error(message))
     return HttpResponse(json_error('ERROR: must GET or DELETE GeoViews'))
-"""
-def getFeaturesInGeoview(request, geo_uid):
 
+
+def getAllFeaturesInGeoview(request, geo_uid):
     user_token_key = get_token_key(request)
     data = DataOperator(user_token_key)
 
@@ -509,9 +509,18 @@ def getFeaturesInGeoview(request, geo_uid):
 
         gv = data.get_geoview(geo_uid)
 
-        layers =
-"""
+        features = []
 
+        for layer in data.get_layers():
+            for feature in layer.feature_set.filter(geom__intersects=gv.geom):
+                features.append(feature)
+
+        geojson = serialize('geojson', features, fields=('layer', 'geom'))
+
+        return HttpResponse(geojson)
+
+    else:
+        return HttpResponse(None)
 
 @csrf_exempt
 def getGeoserverLayers(request, username):
@@ -542,9 +551,8 @@ def getGeoserverLayers(request, username):
 
         else:
             return HttpResponse(json_error('ERROR: request for rules returned status code ' + str(response.status_code)))
-
-    return HttpResponse(json_error('ERROR: no username provided'))
-
+    else:
+        return HttpResponse(json_error('ERROR: no username provided'))
 
 @csrf_exempt
 @login_required
@@ -626,16 +634,18 @@ def handle_uploaded_file(f, request, session):
             print "GeoJSON import failed."
             return
 
+
     # Add featuretype to Geoserver
-    if create_featuretype(layer_uid) is None:
+    lyr_name = create_featuretype(layer_uid)
+    if lyr_name is None:
         print 'WARNING: featureType {} was not successfully sent to Geoserver'.format(layer_uid)
         return
 
     if is_public == True:
-        addGeofenceRule('*', descriptor)
+        addGeofenceRule('*', lyr_name)
     else:
         username = ApiToken.objects.get(uid=session.get('token')).descriptor
-        addGeofenceRule(username, descriptor)
+        addGeofenceRule(username, lyr_name)
 
     return
 
@@ -646,12 +656,16 @@ def create_featuretype(uid):
 
     ft = gs.createFeatureTypeFromUid(uid)
 
+    ft_xml = ET.fromstring(ft)
+
+    lyr_name = ft_xml.find('name').text
+
     if ft is not None:
         response = gs.sendFeatureType(ft)
 
         if response.status_code == 201:
-            location = response.headers['Location']
-            return location
+            #location = response.headers['Location']
+            return lyr_name
         else:
             return None
     else:
