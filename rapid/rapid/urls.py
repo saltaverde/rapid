@@ -58,5 +58,5 @@ urlpatterns = patterns('rapid.views',
     url(r'^rapid/layer/(?P<layer_uid>[\w]+)/remove/viewer/(?P<token_uid>[\w]+)$', 'removeLayerViewer'),
 
     url(r'^rapid/geoserverlayers/(?P<username>[\w]+)$', 'getGeoserverLayers'),
-    url(r'^rapid/geoview/(?P<geo_uid>[\w]+)/features/$', 'getAllFeaturesInGeoview')
+    url(r'^rapid/geoview/(?P<geo_uid>[\w]+)/features/$', 'getFeaturesInGeoview')
                        )
