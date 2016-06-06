@@ -61,19 +61,20 @@ function getGeoview(geoViewText, getLayers) {
         var geoViewListElement = document.createElement("LI");
         var geoViewListElementDiv = document.createElement('DIV');
         geoViewListElementDiv.id = view.uid;
+
         //geoViewListElementDiv.class = 'geoViewListElement';
         var descriptor = document.createTextNode(view.descriptor);
         var showIntersectingFeatures = document.createElement("BUTTON");
 						    showIntersectingFeatures.type = 'button';
-						    showIntersectingFeatures.id = view.uid + '_add';
+						    showIntersectingFeatures.id = view.uid + '_show';
                             showIntersectingFeatures.style.float = 'right';
                             showIntersectingFeatures.className = 'btn btn-default btn-xs';
 						    showIntersectingFeatures.onclick = function () {
-                                getFeaturesInGeoview(view.uid);
+                                getFeaturesInGeoview(geoViewListElementDiv.id);
                                 return false;
-						    };
-						    showIntersectingFeatures.value = 'Get Features';
-                        var buttonText = document.createTextNode('Show Features');
+                            }
+                            showIntersectingFeatures.value = 'Get Features';
+                        var buttonText = document.createTextNode(view.descriptor);
                             showIntersectingFeatures.appendChild(buttonText);
         geoViewListElement.appendChild(descriptor);
         geoViewListElement.appendChild(showIntersectingFeatures);
@@ -167,13 +168,30 @@ function ajaxCall(address, callback) {
 }
 
 function getFeaturesInGeoview(uid) {
+    console.log(uid);
     var response = $.ajax({
-       url: Request.TO_BASE + 'allgeoviewfeatures/' + uid,
+       url: Request.TO_GEOVIEW + uid + '/features/',
        dataType: 'json',
        success: function (data) {
-           L.geoJson(data).addTo(map);
+           L.geoJson(data, {
+               onEachFeature: constructPopup
+           }).addTo(map);
        }
     })
+}
+
+function constructPopup(feature, layer) {
+    var popupText = "";
+
+    popupText += "Parent layer : " + feature.properties.layer + "\n";
+    var props = JSON.parse(feature.properties.properties);
+
+    for (x in props) {
+        var str = x + " : " + props[x] + "<br>";
+        popupText += str;
+    }
+
+    layer.bindPopup(popupText);
 }
 
 function loadGUI() {

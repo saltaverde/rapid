@@ -509,13 +509,11 @@ def getAllFeaturesInGeoview(request, geo_uid):
 
         gv = data.get_geoview(geo_uid)
 
-        features = []
+        feature_qs = data.get_features()
 
-        for layer in data.get_layers():
-            for feature in layer.feature_set.filter(geom__intersects=gv.geom):
-                features.append(feature)
+        features = feature_qs.filter(geom__intersects=gv.geom)
 
-        geojson = serialize('geojson', features, fields=('layer', 'geom'))
+        geojson = serialize('geojson', features, fields=('properties', 'layer', 'geom'))
 
         return HttpResponse(geojson)
 

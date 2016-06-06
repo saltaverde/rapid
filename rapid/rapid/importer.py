@@ -9,7 +9,7 @@ from rapid.settings import TEMP_DATA_DIR
 
 import geojson
 import urllib2
-import pdb
+
 
 class Importer(object):
     def __init__(self, token_key=None):

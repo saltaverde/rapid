@@ -9,6 +9,7 @@ from rapid.helpers import *
 from rapid.models import GeoView, DataLayer, Feature, ApiToken, DataLayerRole, Role, GeoViewRole
 from django.contrib.gis.geos import GEOSGeometry
 from django.contrib.gis.geos import Point
+from django.db.models import Q
 import json
 
 class DataOperator(object):
@@ -125,12 +126,18 @@ class DataOperator(object):
         role.save()
         return layer.uid
 
+    def get_features(self):
+        return Feature.objects.filter(Q(layer__in=self.get_layers()))
+
     def get_layers(self):
-        return [lyr for lyr in DataLayer.objects.all() if self.has_layer_permissions(lyr.uid, Role.VIEWER)]
+        return [lyr for lyr in DataLayer.objects.all() if (self.has_layer_permissions(lyr.uid, Role.VIEWER)
+                or lyr.is_public
+                or self.has_layer_permissions(lyr.uid, Role.EDITOR)
+                or self.has_layer_permissions(lyr.uid, Role.OWNER))]
 
     def get_layer(self, uid):
-        layer = DataLayer.objects.filter(uid=uid)
-        return layer[0]
+        layer = DataLayer.objects.get(uid=uid)
+        return layer
 
     def get_layer_features(self, uid, start=None, stop=None):
         layer = self.get_layer(uid)
@@ -155,7 +162,10 @@ class DataOperator(object):
             return False
 
     def get_geoviews(self):
-        return list(GeoView.objects.all())
+        return [gv for gv in GeoView.objects.all() if (gv.is_public
+                                                       or self.has_geoview_permissions(gv.uid, Role.OWNER)
+                                                       or self.has_geoview_permissions(gv.uid, Role.EDITOR)
+                                                       or self.has_geoview_permissions(gv.uid, Role.VIEWER))]
 
     def get_geoview(self, uid, file=False):
         if not file:

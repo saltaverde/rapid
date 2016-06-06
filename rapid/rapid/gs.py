@@ -4,17 +4,31 @@ from rapid.models import *
 from geoserver.catalog import Catalog
 import requests
 import os
-import pdb
 
 class Geoserver():
     def __init__(self):
         self.restEndpoint = GEOSERVER_REST_ENDPOINT
 
+    def createFeatureTypeFromQuerySet(self, descriptor, queryset):
+
+        cat = Catalog(GEOSERVER_REST_ENDPOINT)
+        lyrs = cat.get_layers()
+        lyr_names = [lyr.name for lyr in lyrs]
+
+        # Check for duplicate layer names and append a count number for disambiguation
+        count = 2
+        lyr_name = descriptor.replace(' ', '_').lower()
+        if lyr_name in lyr_names:
+            lyr_name = lyr_name + '_' + str(count)
+
+        while lyr_name in lyr_names:
+            count += 1
+            lyr_name = lyr_name.replace('_' + str(count), '_' + str(count + 1))
+
     def createFeatureTypeFromUid(self, uid):
         """
         Returns an XML formatted string used to post to the Geoserver REST API
         """
-        pdb.set_trace()
         try:
             layer_state = DataLayer.objects.get(uid=uid).__getstate__()
         except:

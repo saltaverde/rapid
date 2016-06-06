@@ -1,7 +1,6 @@
 from django.core.management import BaseCommand
 import time
 from datetime import timedelta
-import pdb
 
 from rapid.exporter import Exporter
 from rapid.select import *
@@ -365,17 +364,20 @@ class Command(BaseCommand):
                 if response.isdigit():
                     choice = int(response)
 
+                    data = DataOperator(token_key)
+
+                    role = DataLayerRole(layer_id=layer_uid, token=data.get_apitoken(), role=Role.OWNER)
+                    role.save()
+
                     importer = Importer(token_key)
                     print 'Importing...'
                     importer.import_shapefile(files[choice], layer['uid'])
-                    pdb.set_trace()
                     # Add featuretype to Geoserver
                     lyr_name = create_featuretype(layer['uid'])
+
                     if lyr_name is None:
                         print 'WARNING: featureType {0} was not successfully sent to Geoserver'.format(layer_uid)
                         return
-
-                    pdb.set_trace()
 
                     if layer['is_public'] == True:
                         addGeofenceRule('*', lyr_name)
