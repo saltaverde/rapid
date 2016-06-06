@@ -91,7 +91,7 @@ class Importer(object):
             srid = srs['AUTHORITY', 1]
 
         if srid is None:
-            print "Unable to locate EPSG authority code for {0}. Using 4326.".format(lyrs[0].srs.name)
+            print "Unable to locate EPSG authority code for {0}. Using 4326.".format(srs.name)
             srid = 4326
 
         # update srid in DB
