@@ -10,7 +10,6 @@ from rapid.settings import TEMP_DATA_DIR
 import geojson
 import urllib2
 
-
 class Importer(object):
     def __init__(self, token_key=None):
         self.token_key = token_key
@@ -149,19 +148,4 @@ class Importer(object):
 
                 properties = {}
                 for i in xrange(1, len(sf.fields)):
-                    record_entry = record[i - 1]
-
-                    if type(record_entry) is str:
-                        if record_entry.isspace():
-                            properties[sf.fields[i][0]] = None
-                        else:
-                            properties[sf.fields[i][0]] = record_entry
-                    else:
-                        properties[sf.fields[i][0]] = record_entry
-
-                if 'ORIGID' in properties:
-                    del properties['ORIGID']
-                properties = to_json(properties)
-
-                data.create_feature(geom, layer=layer, properties=properties)
-'''
+ '''

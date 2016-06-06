@@ -346,6 +346,7 @@ class Command(BaseCommand):
             print r.json()
 
         elif response == '4':
+
             for root, dirnames, filenames in os.walk('data/dropbox'):
                 files = []
                 for filename in fnmatch.filter(filenames, '*.zip'):
@@ -372,9 +373,9 @@ class Command(BaseCommand):
                     importer = Importer(token_key)
                     print 'Importing...'
                     importer.import_shapefile(files[choice], layer['uid'])
+
                     # Add featuretype to Geoserver
                     lyr_name = create_featuretype(layer['uid'])
-
                     if lyr_name is None:
                         print 'WARNING: featureType {0} was not successfully sent to Geoserver'.format(layer_uid)
                         return
@@ -502,8 +503,3 @@ class Command(BaseCommand):
             except Exception, e:
                 print 'An error occurred. Technical details logged to ui_error_log.txt.\n'
                 log_exception(e)
-
-
-
-
-

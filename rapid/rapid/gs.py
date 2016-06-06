@@ -25,6 +25,8 @@ class Geoserver():
             count += 1
             lyr_name = lyr_name.replace('_' + str(count), '_' + str(count + 1))
 
+        # To be continued . . .
+
     def createFeatureTypeFromUid(self, uid):
         """
         Returns an XML formatted string used to post to the Geoserver REST API

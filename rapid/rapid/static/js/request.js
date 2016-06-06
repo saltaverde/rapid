@@ -4,7 +4,7 @@ var Request = {
     TO_LAYER: "/rapid/layer/",
     TO_GEOVIEW: "/rapid/geoview/",
     TO_BASE: "/rapid/"
-}; 
+};
 
 var geoViewStyle = {
         weight: 2,
@@ -35,7 +35,6 @@ function getGeoviews(geoViewsText, getLayers) {
         ajaxCall(Request.TO_GEOVIEW + views[i].uid, function(response) {
             getGeoview(response, getLayers)});
         }
-       
 }
 
 function getGeoview(geoViewText, getLayers) {
@@ -61,7 +60,6 @@ function getGeoview(geoViewText, getLayers) {
         var geoViewListElement = document.createElement("LI");
         var geoViewListElementDiv = document.createElement('DIV');
         geoViewListElementDiv.id = view.uid;
-
         //geoViewListElementDiv.class = 'geoViewListElement';
         var descriptor = document.createTextNode(view.descriptor);
         var showIntersectingFeatures = document.createElement("BUTTON");
@@ -78,9 +76,9 @@ function getGeoview(geoViewText, getLayers) {
                             showIntersectingFeatures.appendChild(buttonText);
         geoViewListElement.appendChild(descriptor);
         geoViewListElement.appendChild(showIntersectingFeatures);
+
         var ul = document.createElement("UL");
         ul.id = view.uid + '_layers';
-
 
         for (i = 0; i < view.layers.length; i++) {
             var liDiv = document.createElement("DIV");
@@ -94,7 +92,6 @@ function getGeoview(geoViewText, getLayers) {
         }
         geoViewListElement.appendChild(ul);
         geoViewList.appendChild(geoViewListElement);
-        ///////////////////////////////////////////////////////////////////////
 
     if (getLayers) {
         // Create geoview object shell
@@ -201,8 +198,7 @@ function loadGUI() {
     //test();
 }
    
-$(document).ajaxStop(function() {
-    // After all geoviews have been loaded in, construct gui
+$(document).ajaxStop(function () {
     if (control !== undefined) {
         control.removeFrom(map);
     }
@@ -213,5 +209,5 @@ $(document).ajaxStop(function() {
         control = L.Control.styledLayerControl(baseMaps, overlays, options);
         gv = L.geoJson(geoViewGeometry, {style: geoViewStyle});
         gv.addTo(map);
-        control.addTo(map);    
-});
+        control.addTo(map);
+})

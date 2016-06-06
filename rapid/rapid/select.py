@@ -10,6 +10,7 @@ from rapid.models import GeoView, DataLayer, Feature, ApiToken, DataLayerRole, R
 from django.contrib.gis.geos import GEOSGeometry
 from django.contrib.gis.geos import Point
 from django.db.models import Q
+
 import json
 
 class DataOperator(object):
@@ -156,6 +157,7 @@ class DataOperator(object):
         try:
             for feature in DataLayer.objects.get(uid=uid):
                 Feature.objects.get(uid=feature.uid).delete()
+
             DataLayer.objects.get(uid=uid).delete()
             return True
         except:

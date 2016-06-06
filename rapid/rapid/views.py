@@ -498,8 +498,7 @@ def getGeoview(request, geo_uid):
         return HttpResponse(json_error(message))
     return HttpResponse(json_error('ERROR: must GET or DELETE GeoViews'))
 
-
-def getAllFeaturesInGeoview(request, geo_uid):
+def getFeaturesInGeoview(request, geo_uid):
     user_token_key = get_token_key(request)
     data = DataOperator(user_token_key)
 
@@ -508,7 +507,6 @@ def getAllFeaturesInGeoview(request, geo_uid):
             return HttpResponse(json_error('No viewing permissions for this GeoView.'))
 
         gv = data.get_geoview(geo_uid)
-
         feature_qs = data.get_features()
 
         features = feature_qs.filter(geom__intersects=gv.geom)
@@ -522,12 +520,11 @@ def getAllFeaturesInGeoview(request, geo_uid):
 
 @csrf_exempt
 def getGeoserverLayers(request, username):
-
     if username is not None:
         try:
             response = getGeofenceRules(username)
         except:
-            print "Exception encountered when fetching rules: " + e
+            print "Exception encountered when fetching rules: "
             return
 
         if response.status_code == 200:
@@ -549,6 +546,7 @@ def getGeoserverLayers(request, username):
 
         else:
             return HttpResponse(json_error('ERROR: request for rules returned status code ' + str(response.status_code)))
+
     else:
         return HttpResponse(json_error('ERROR: no username provided'))
 
@@ -632,7 +630,6 @@ def handle_uploaded_file(f, request, session):
             print "GeoJSON import failed."
             return
 
-
     # Add featuretype to Geoserver
     lyr_name = create_featuretype(layer_uid)
     if lyr_name is None:
@@ -660,7 +657,6 @@ def create_featuretype(uid):
 
     if ft is not None:
         response = gs.sendFeatureType(ft)
-
         if response.status_code == 201:
             #location = response.headers['Location']
             return lyr_name
