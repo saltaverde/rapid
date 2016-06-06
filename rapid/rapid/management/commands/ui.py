@@ -367,7 +367,7 @@ class Command(BaseCommand):
 
                     data = DataOperator(token_key)
 
-                    role = DataLayerRole(layer_id=layer.uid, token=data.get_apitoken(), role=Role.OWNER)
+                    role = DataLayerRole(layer_id=layer['uid'], token=data.get_apitoken(), role=Role.OWNER)
                     role.save()
 
                     importer = Importer(token_key)
