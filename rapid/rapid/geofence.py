@@ -27,7 +27,7 @@ def addGeofenceUser(username, password, email):
 
     return response
 
-def addGeofenceRule(username=None, layer=None, grant='ALLOW'):
+def addGeofenceRule(username='*', layer=None, grant='ALLOW'):
 
     xml_template = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\
                         <rule grant="ALLOW">\
@@ -42,10 +42,10 @@ def addGeofenceRule(username=None, layer=None, grant='ALLOW'):
 
     xml_root = ET.fromstring(xml_template)
 
-    if username is not None:
-        xml_root.find('username').text = username
-    else:
+    if username == '*' or username is None:
         xml_root.remove(xml_root.find('username'))
+    else:
+        xml_root.find('username').text = username
 
     if layer is not None:
         layer = layer.replace(' ', '_').lower()

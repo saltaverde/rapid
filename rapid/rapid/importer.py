@@ -52,8 +52,86 @@ class Importer(object):
 
         ds = GdalDataSource(path)
 
-
     def import_shapefile(self, path, layer_uid=None):
+        from rapid.settings import TEMP_DATA_DIR
+
+        try:
+            data = DataOperator(self.token_key)
+            layer = data.get_layer(layer_uid)
+        except:
+            raise Exception('Invalid layer UID')
+
+        try:
+            new_dir, filename = unzip_from(path)
+        except:
+            raise Exception('Unable to extract Shapefile')
+
+        location = os.path.join(TEMP_DATA_DIR, new_dir)
+
+        shp_matches = []
+        prj_matches = []
+
+        for root, dirnames, filenames in os.walk(location):
+            for filename in fnmatch.filter(filenames, '*.shp'):
+                shp_matches.append(os.path.join(root, filename))
+            for filename in fnmatch.filter(filenames, '*.prj'):
+                prj_matches.append(os.path.join(root, filename))
+
+        if len(shp_matches) == 0:
+            raise Exception('Unable to read Shapefile (.shp file not found in archive)')
+
+        shp_location = shp_matches[0]
+
+        srid = 4326
+
+        if len(prj_matches) > 0:
+            prj_location = prj_matches[0]
+            prj_content = open(prj_location, 'r').read().strip()
+            srid = prj_content_to_srid(prj_content)
+
+        sf = shapefile.Reader(shp_location)
+
+        for shape_record in sf.shapeRecords():
+            geom_type = shape_record.shape.__geo_interface__['type']
+            coords = shape_record.shape.points
+
+            try:
+                parts = shape_record.shape.parts
+            except:
+                parts = None
+
+            wkt = create_wkt(geom_type, coords, parts)
+            results = transform_wkt(wkt, srid, 4326)
+
+            geom = GEOSGeometry(results)
+
+            if isinstance(geom, Point):
+                geom = Point(geom[0], geom[1])
+
+            record = shape_record.record
+
+            properties = {}
+            for i in xrange(1, len(sf.fields)):
+                record_entry = record[i - 1]
+
+                if type(record_entry) is str:
+                    if record_entry.isspace():
+                        properties[sf.fields[i][0]] = None
+                    else:
+                        properties[sf.fields[i][0]] = record_entry
+                else:
+                    properties[sf.fields[i][0]] = record_entry
+
+            if 'ORIGID' in properties:
+                del properties['ORIGID']
+            properties = to_json(properties)
+
+            data.create_feature(geom, layer=layer, properties=properties)
+
+        return
+
+'''
+        def import_shapefile(self, path, layer_uid=None):
 
         try:
             data = DataOperator(self.token_key)
@@ -88,7 +166,7 @@ class Importer(object):
             ds = GdalDataSource(shp_location)
             lyr = ds[0]
             srs = SpatialReference(lyr.srs.proj4)
-            srid = srs['AUTHORITY', 1]
+            srid = srs.srid
 
         if srid is None:
             print "Unable to locate EPSG authority code for {0}. Using 4326.".format(srs.name)
@@ -113,7 +191,8 @@ class Importer(object):
                     else:
                         properties[field] = temp
 
-                geom = GEOSGeometry(feat.geom.wkt)
+                geom = transform_wkt(feat.geom.wkt, srid, 4326)
+
                 properties = to_json(properties)
 
                 data.create_feature(geom, layer=layer, properties=properties)
@@ -122,30 +201,4 @@ class Importer(object):
             print 'No data imported. The Shapefile {0} has no records (features).'.format(shp_location)
 
         return
-
-'''
-        sf = shapefile.Reader(shp_location)
-
-        if sf.numRecords > 0:
-            for shape_record in sf.shapeRecords():
-                geom_type = shape_record.shape.__geo_interface__['type']
-                coords = shape_record.shape.points
-
-                try:
-                    parts = shape_record.shape.parts
-                except:
-                    parts = None
-
-                wkt = create_wkt(geom_type, coords, parts)
-                results = transform_wkt(wkt, srid, 4326)
-
-                geom = GEOSGeometry(results)
-
-                if isinstance(geom, Point):
-                    geom = Point(geom[0], geom[1])
-
-                record = shape_record.record
-
-                properties = {}
-                for i in xrange(1, len(sf.fields)):
  '''
