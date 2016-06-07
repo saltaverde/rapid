@@ -115,10 +115,14 @@
             <div class="form-group" style="padding: 0 15px">
                 <button id='drawButton' class="btn btn-default btn-block" onclick="map.addControl(drawControl); drawButton.disabled = true;">Draw GeoView</button>
             </div>
+
+            <div class="form-group" style="display: block; padding: 0 15px;">
+                <input id='input' type="text" class="form-control" placeholder="Enter name for GeoView" value="" onkeyup='checkInput();' disabled >
+            </div>
+
             <div class="form-group" style="padding: 0 15px">
                 <button id='sendButton' class="btn btn-default btn-block" onclick="addGeoView();" disabled>Send GeoView to RAPID</button>
             </div>
-            <input id='input' type="hidden" value="" onkeyup='checkInput();' disabled>
 
             {% if user.is_authenticated %}
                 <div class="form-group" style="padding: 0 15px">
