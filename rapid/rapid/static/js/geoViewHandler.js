@@ -64,7 +64,6 @@ function sendGeoView (geoView) {
 		catch(err) {
 			messageDiv.innerHTML = err.message;
 		}
-	
 }
 
 function checkInput() {
