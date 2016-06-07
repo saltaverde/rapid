@@ -115,15 +115,37 @@
             <div class="form-group" style="padding: 0 15px">
                 <button id='drawButton' class="btn btn-default btn-block" onclick="map.addControl(drawControl); drawButton.disabled = true;">Draw GeoView</button>
             </div>
+
+            <div class="form-group" style="display: none; padding: 0 15px;">
+                <input id='input' type="text" class="form-control" placeholder="Enter name for GeoView" value="" onkeyup='checkInput();' disabled >
+            </div>
+
             <div class="form-group" style="padding: 0 15px">
                 <button id='sendButton' class="btn btn-default btn-block" onclick="addGeoView();" disabled>Send GeoView to RAPID</button>
             </div>
-            <input id='input' type="hidden" value="" onkeyup='checkInput();' disabled>
 
             {% if user.is_authenticated %}
                 <div class="form-group" style="padding: 0 15px">
-                    <a class="btn btn-default btn-block" href="/rapid/upload/">Upload Data to Rapid</a>
+                    <a class="btn btn-default btn-block" id="uploadButton" href="#submit">Upload Data to Rapid</a>
                 </div>
+
+                <form id="form" action="rapid/uploadFile/" method="post" enctype="multipart/form-data" style="display: none;">
+
+                    <div class="form-group" style="padding: 0 30px">
+                        {{ form.des }}
+                    </div>
+                    <div class="form-group" style="padding: 0 30px">
+                        {{ form.public }}
+                        {{ form.public.label }}
+                    </div>
+                    <div class="form-group" style="padding: 0 30px">
+                        {{ form.file }}
+                    </div>
+
+                    <div class="form-group" style="padding: 0 30px">
+                        <input class="btn btn-default btn-block" id="submit" type="submit" value="Submit" disabled>
+                    </div>
+                </form>
             {% endif %}
         </div>
     </div>
@@ -182,7 +204,7 @@
     <script>
 
         var sendButton = document.getElementById('sendButton');
-        var messageDiv = document.getElementById("message");
+        var messageDiv = document.getElementById('message');
         var drawButton = document.getElementById('drawButton');
         var geoViewList = document.getElementById('geoViewList');
         var layerList = document.getElementById('layerList');
@@ -204,11 +226,13 @@
             if (drawnItems.getLayers().length == 1) {
                 sendButton.disabled = false;
                 input.disabled = false;
+                $('#input').parent().toggle('500');
                 messageDiv.innerHTML = 'Enter a descriptor for the GeoView';
             }
             else {
                 sendButton.disabled = true;
                 input.disabled = true;
+                $('#input').parent().toggle('500');
                 messageDiv.innerHTML = 'Only one feature can be sent to a GeoView.'
             }
         });
@@ -218,20 +242,50 @@
             if (drawnItems.getLayers().length == 1) {
                 sendButton.disabled = false;
                 input.disabled = false;
+                $('#input').parent().toggle('500');
                 messageDiv.innerHTML = 'Enter a descriptor for the GeoView';
             }
             else if (drawnItems.getLayers().length == 0) {
                 sendButton.disabled = true;
                 input.disabled = true;
+                $('#input').parent().toggle('500');
                 messageDiv.innerHTML = 'Please draw a GeoView.'
             }
             else {
                 sendButton.disabled = true;
                 input.disabled = true;
+                $('#input').parent().toggle('500');
                 messageDiv.innerHTML = 'Only one feature can be sent to a GeoView.'
             }
         });
 
+        $('#uploadButton').click(function(e) {
+            $('#form').toggle('500');
+        });
+
+    </script>
+
+    <script>
+        var form = document.getElementById('form');
+        var input = document.getElementById('id_file');
+        var submit = document.getElementById('submit');
+
+            input.onchange = function () {
+                if (input.value != '') {
+                    var extension = input.value.match(/[\w]+$/g);
+                        extension = extension[0].toUpperCase();
+                    if (extension == 'ZIP' || extension == 'JSON') {
+                        submit.disabled = false;
+                        form.action = 'http://127.0.0.1:3000/rapid/uploadFile/'
+                        //token_input = document.getElementById('id_token')
+                        //token_input.value = token
+                    }
+                    else {
+                        input.value = '';
+                        alert("RAPID cannot process files of type " + extension);
+                    }
+                }
+            }
     </script>
 
 {% endblock content %}

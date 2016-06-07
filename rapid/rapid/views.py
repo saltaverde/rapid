@@ -803,6 +803,7 @@ def portal(request):
     from datetime import datetime
 
     if request.session.test_cookie_worked():
+        form = UploadFileForm()
         user = request.user
 
         token = request.session.get('token')
@@ -812,6 +813,6 @@ def portal(request):
 
         request.session['last_visit_login'] = str(datetime.now())
 
-        context = {'username': user.username, 'STATIC_URL':STATIC_URL}
+        context = {'username': user.username, 'form': form, 'STATIC_URL': STATIC_URL}
 
         return render(request, 'rapid/portal/main.html', context)
