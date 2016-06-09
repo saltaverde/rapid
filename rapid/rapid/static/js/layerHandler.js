@@ -10,39 +10,58 @@ var refreshLayers = function () {
 				if (oReq.readyState == 4 && oReq.status == 200) {                
 					//console.log(oReq.responseText);
 					var existingLayers = JSON.parse(oReq.responseText);
-					layerList.innerHTML = "<li><h4>Available Layers</h4></li>";
+					$('#layerList').html('<li><h4>Available Layers</h4></li>');
 
 					for (i = 0; i < existingLayers.length; i++) {
+                     //    var att;
 					    var uid = existingLayers[i].uid;
 					    layers[existingLayers[i].descriptor] = existingLayers[i];
-						var liDiv = document.createElement("DIV");
-						var button = document.createElement("BUTTON");
-						    button.type = 'button';
-						    button.id = uid + '_add';
-                            button.style.float = 'right';
-                            button.className = 'btn btn-default btn-xs';
-						    button.onclick = function () {
-                                getGeoViewInput(uid);
-                                button.disabled = true;
-                                return false;
-						    };
-						    button.value = 'Add';
-						var buttonText = document.createTextNode('Add');
-                        button.appendChild(buttonText);
+                        var liDiv = $(document.createElement('div'));
+                        var buttonDiv = $(document.createElement('div')).addClass('dropdown').css({'display': 'inline-block', 'float': 'right'});
+						var button = $(document.createElement('button'));
+						    button.attr('type', 'button');
+						    button.attr('id', uid + '_add');
+                            button.attr('data-toggle', 'dropdown');
+                            button.attr('aria-haspopup', 'true');
+                            button.attr('aria-expanded', 'false');
+                            button.css('float', 'right');
+                            button.addClass('btn btn-default btn-xs dropdown-toggle');
+                            button.text('Add ');
 
-						var li = document.createElement("LI");
-						var public = '(public) ';
-						if (existingLayers[i].is_public == false) {
-							public = '(private) ';
-						}
+					// 	    button.onclick = function () {
+                     //            getGeoViewInput(uid);
+                     //            button.disabled = true;
+                     //            return false;
+					// 	    };
+
+
+                            buttonDiv.append(button.append($(document.createElement('span')).addClass('caret')));
+
+                        var dropdownUL = $(document.createElement('ul')).addClass('dropdown-menu');
+                            dropdownUL.attr('aria-labelledby', uid + '_add');
+                            dropdownUL.css({'right': 0, 'left': 'inherit'});
+
+                        for (var geoView in geoViews) {
+                            var dropdownLI = $(document.createElement('li'))
+                            var dropdownA = $(document.createElement('a')).text(geoViews[geoView].descriptor).attr('href', '#');
+                            dropdownA.attr ('onClick',
+                                 'addLayerToGeoView(\'' + uid +'\', \'' + geoViews[geoView].descriptor +'\')');
+                            dropdownUL.append(dropdownLI.append(dropdownA));
+                        }
+
+                        var li = $(document.createElement('li'));
+
+						var public = existingLayers[i].is_public == false ? '(private) ' : '(public) ';
+
 						var descriptor = document.createTextNode(existingLayers[i].descriptor + " " + public);
-						var uid = existingLayers[i].uid;
-						liDiv.id = uid + '_layer'; liDiv.style.width = '100%'; liDiv.style.display = 'inline-block'; liDiv.style.marginBottom = '5px';
-						li.appendChild(liDiv).appendChild(descriptor);
-						liDiv.appendChild(button);
-						layerList.appendChild(li);
+					// 	var uid = existingLayers[i].uid;
+						liDiv.attr('id', uid + '_layer');
+                        liDiv.css({'width': '100%', 'display': 'inline-block', 'margin-bottom': '5px'});
+						li.append(liDiv);
+						liDiv.append(descriptor).append(buttonDiv.append(dropdownUL));
+						$('#layerList').append(li);
 					}
-                    layerList.appendChild(document.createElement("LI")).appendChild(document.createElement("HR"));
+                    $('#layerList').append(document.createElement('li')).append(document.createElement('hr'));
 				}
 
     		}
@@ -77,10 +96,10 @@ function getGeoViewInput(l_uid) {
 }
 
 function addLayerToGeoView (l_uid, gv_uid) {
-    //console.log(l_uid + ' ' + gv_uid);
-    var form = document.getElementById(l_uid + '_form');
-    var liDiv = document.getElementById(l_uid + '_layer');
-    liDiv.removeChild(form);
+    // console.log(l_uid + ' ' + gv_uid);
+    // var form = document.getElementById(l_uid + '_form');
+    // var liDiv = document.getElementById(l_uid + '_layer');
+    // liDiv.removeChild(form);
 
     try {
     var oReq = new XMLHttpRequest();
@@ -90,19 +109,20 @@ function addLayerToGeoView (l_uid, gv_uid) {
         oReq.onreadystatechange = function() {
             if (oReq.readyState == 4 && oReq.status == 200) {
                 messageDiv.innerHTML = (JSON.parse(oReq.responseText).status);
-                var button = document.getElementById(l_uid + '_add');
-                button.onclick = function () {
-                    getGeoViewInput(l_uid);
-                    button.disabled = true;
+                var button = $('#' + l_uid + '_add');
+                button.click(function () {
+                    // console.log('disable button');
+                    // getGeoViewInput(l_uid);
+                    button.addClass('disabled');
                     return false;
-                }
-                ajaxCall(Request.TO_GEOVIEW+"?token="+localStorage.getItem('token'), function (response) {
+                });
+                ajaxCall(Request.TO_GEOVIEW+'?token='+localStorage.getItem('token'), function (response) {
                     getGeoviews(response, true)});
             }
         }
     }
     catch(err) {
-			alert("There was an error!");
+			alert('There was an error!');
 			messageDiv.innerHTML = err.message;
    }
 
