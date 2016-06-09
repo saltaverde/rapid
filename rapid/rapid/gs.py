@@ -70,7 +70,7 @@ class Geoserver():
             # Set appropriate values in the xml tree
             title.text = layer_state['descriptor']
             tableName.text = lyr_name
-            sridElem.text = layer_state['srid']
+            sridElem.text = '4326'
 
             if name is not None:
                 name.text = tableName.text
