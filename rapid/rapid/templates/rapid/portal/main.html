@@ -117,7 +117,7 @@
             </div>
 
             <div class="form-group" style="display: none; padding: 0 15px;">
-                <input id='input' type="text" class="form-control" placeholder="Enter name for GeoView" value="" onkeyup='checkInput();' >
+                <input id='input' type="text" class="form-control" placeholder="Enter name for GeoView" value="" onkeyup='checkInput();' disabled >
             </div>
 
             <div class="form-group" style="padding: 0 15px">
@@ -225,14 +225,16 @@
 
             if (drawnItems.getLayers().length == 1) {
                 sendButton.disabled = false;
-                input.disabled = false;
-                $('#input').parent().toggle('500');
+//                input.disabled = false;
+                $("#input").prop('disabled', false);
+                $('#input').parent().show('500');
                 messageDiv.innerHTML = 'Enter a descriptor for the GeoView';
             }
             else {
                 sendButton.disabled = true;
-                input.disabled = true;
-                $('#input').parent().toggle('500');
+//                input.disabled = true;
+                $("#input").prop('disabled', true);
+                $('#input').parent().hide('500');
                 messageDiv.innerHTML = 'Only one feature can be sent to a GeoView.'
             }
         });
@@ -241,20 +243,22 @@
 
             if (drawnItems.getLayers().length == 1) {
                 sendButton.disabled = false;
-                input.disabled = false;
-                $('#input').parent().toggle('500');
+//                input.disabled = false;
+                $("#input").prop('disabled', false);
+                $('#input').parent().show('500');
                 messageDiv.innerHTML = 'Enter a descriptor for the GeoView';
             }
             else if (drawnItems.getLayers().length == 0) {
                 sendButton.disabled = true;
-                input.disabled = true;
-                $('#input').parent().toggle('500');
+//                input.disabled = true;
+                $("#input").prop('disabled', true);
+                $('#input').parent().hide('500');
                 messageDiv.innerHTML = 'Please draw a GeoView.'
             }
             else {
                 sendButton.disabled = true;
                 input.disabled = true;
-                $('#input').parent().toggle('500');
+                $('#input').parent().hide('500');
                 messageDiv.innerHTML = 'Only one feature can be sent to a GeoView.'
             }
         });

@@ -68,7 +68,7 @@ function sendGeoView (geoView) {
 
 function checkInput() {
     
-    if (input.value == null || input.value == "") {
+    if ($('#input').val() == null || $('#input').val() == "") {
    		sendButton.disabled = true;
     }
     else {
