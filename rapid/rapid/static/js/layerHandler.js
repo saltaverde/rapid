@@ -28,21 +28,17 @@ var refreshLayers = function () {
                             button.addClass('btn btn-default btn-xs dropdown-toggle');
                             button.text('Add ');
 
-					// 	    button.onclick = function () {
-                     //            getGeoViewInput(uid);
-                     //            button.disabled = true;
-                     //            return false;
-					// 	    };
-
-
                             buttonDiv.append(button.append($(document.createElement('span')).addClass('caret')));
 
                         var dropdownUL = $(document.createElement('ul')).addClass('dropdown-menu');
                             dropdownUL.attr('aria-labelledby', uid + '_add');
                             dropdownUL.css({'right': 0, 'left': 'inherit'});
 
+                        var dropdownLI = $(document.createElement('li')).addClass('dropdown-header').text('GeoViews');
+                            dropdownUL.append(dropdownLI);
+
                         for (var geoView in geoViews) {
-                            var dropdownLI = $(document.createElement('li'))
+                            dropdownLI = $(document.createElement('li'));
                             var dropdownA = $(document.createElement('a')).text(geoViews[geoView].descriptor).attr('href', '#');
                             dropdownA.attr ('onClick',
                                  'addLayerToGeoView(\'' + uid +'\', \'' + geoViews[geoView].descriptor +'\')');
