@@ -61,6 +61,10 @@ function getGeoview(geoViewText, getLayers) {
         var geoViewListElementDiv = document.createElement('DIV');
         geoViewListElementDiv.id = view.uid;
         //geoViewListElementDiv.class = 'geoViewListElement';
+        geoViewListElementDiv.style.marginBottom = '5px';
+        geoViewListElementDiv.style.width = '100%';
+        geoViewListElementDiv.style.display = 'inline-block';
+
         var descriptor = document.createTextNode(view.descriptor);
         var showIntersectingFeatures = document.createElement("BUTTON");
 						    showIntersectingFeatures.type = 'button';
@@ -72,10 +76,10 @@ function getGeoview(geoViewText, getLayers) {
                                 return false;
                             }
                             showIntersectingFeatures.value = 'Get Features';
-                        var buttonText = document.createTextNode(view.descriptor);
+                        var buttonText = document.createTextNode('Show All Data');
                             showIntersectingFeatures.appendChild(buttonText);
-        geoViewListElement.appendChild(descriptor);
-        geoViewListElement.appendChild(showIntersectingFeatures);
+        geoViewListElement.appendChild(geoViewListElementDiv).appendChild(descriptor);
+        geoViewListElement.appendChild(geoViewListElementDiv).appendChild(showIntersectingFeatures);
 
         var ul = document.createElement("UL");
         ul.id = view.uid + '_layers';
