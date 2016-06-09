@@ -1,5 +1,51 @@
 var layers  = {};
 
+var TO_GEOSERVER = 'http://geocontex.com:8080/geoserver/ows';
+
+function replaceAll(str, find, replace) {
+  return str.replace(new RegExp(find, 'g'), replace);
+}
+
+var defaultParameters = {
+    service: 'WFS',
+    version: '1.1.0',
+    request: 'GetFeature',
+    // layer name goes below, prefixed by 'rapid:'. All layer names are lowercase
+    // and spaces are replaced with _
+    // ex: Minnesota Railroads would be minnesota_railroads
+    typeName: '',
+    maxFeatures: 200,
+    outputFormat: 'text/javascript',
+};
+
+var parameters = L.Util.extend(defaultParameters);
+
+function handleJson(data) {
+    L.geoJson(data, {
+               onEachFeature: constructPopup
+           }).addTo(map);
+}
+
+function parseResponse() {
+    console.log("Data received")
+}
+
+function addLayerToMap(layer_name)
+{
+    defaultParameters.typeName = 'rapid:' + replaceAll(layer_name.data, ' ', '_').toLowerCase();
+    console.log(TO_GEOSERVER + L.Util.getParamString(parameters));
+    $.ajax({
+        url: TO_GEOSERVER + L.Util.getParamString(parameters),
+        dataType: 'jsonp',
+        headers: {
+            // We'll need to use https to hide user credentials
+            'Authorization': 'Basic ' + btoa('admin:admin')
+        },
+        jsonpCallback: 'parseResponse',
+        success: handleJson
+    });
+}
+
 var refreshLayers = function () {
 	try {
 			var oReq = new XMLHttpRequest();
@@ -50,11 +96,21 @@ var refreshLayers = function () {
 						var public = existingLayers[i].is_public == false ? '(private) ' : '(public) ';
 
 						var descriptor = document.createTextNode(existingLayers[i].descriptor + " " + public);
+                        var addToMapDiv = $(document.createElement('div')).addClass('dropdown').css({'display': 'inline-block', 'float': 'right'});
+                        var addToMapButton = $(document.createElement('button'));
+                            addToMapButton.attr('type','button');
+                            addToMapButton.attr('id', uid + '_show');
+                            addToMapButton.css('float', 'right');
+                            addToMapButton.addClass('btn btn-default btn-xs dropdown-toggle');
+                            addToMapButton.text('Preview');
+                            addToMapButton.click(existingLayers[i].descriptor, addLayerToMap);
+
+                        addToMapDiv.append(addToMapButton.append($(document.createElement('span'))));
 					// 	var uid = existingLayers[i].uid;
 						liDiv.attr('id', uid + '_layer');
                         liDiv.css({'width': '100%', 'display': 'inline-block', 'margin-bottom': '5px'});
 						li.append(liDiv);
-						liDiv.append(descriptor).append(buttonDiv.append(dropdownUL));
+						liDiv.append(descriptor).append(addToMapDiv).append(buttonDiv.append(dropdownUL));
 						$('#layerList').append(li);
 					}
                     $('#layerList').append(document.createElement('li')).append(document.createElement('hr'));

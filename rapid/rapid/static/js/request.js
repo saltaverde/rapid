@@ -184,7 +184,7 @@ function getFeaturesInGeoview(uid) {
 function constructPopup(feature, layer) {
     var popupText = "";
 
-    popupText += "Parent layer : " + feature.properties.layer + "\n";
+    popupText += "Parent layer : " + feature.properties.layer + "<br>";
     var props = JSON.parse(feature.properties.properties);
 
     for (x in props) {

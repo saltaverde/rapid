@@ -769,7 +769,7 @@ def user_login(request):
                 # We'll send the user back to the homepage.
                 request.session.set_test_cookie()
                 login(request, user)
-                request.session.set_expiry(300)
+                # request.session.set_expiry(300)
                 return HttpResponseRedirect('/rapid/portal/')
             else:
                 # An inactive account was used - no logging in!
