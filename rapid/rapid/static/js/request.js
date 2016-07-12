@@ -192,6 +192,8 @@ function constructPopup(feature, layer) {
         popupText += str;
     }
 
+    feature.properties.properties = props;
+    
     layer.bindPopup(popupText);
 }
 

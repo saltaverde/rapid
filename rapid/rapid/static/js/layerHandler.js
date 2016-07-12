@@ -1,4 +1,5 @@
 var layers  = {};
+var visibleLayers = [];
 
 var TO_GEOSERVER = 'http://geocontex.com:8080/geoserver/ows';
 
@@ -16,14 +17,16 @@ var defaultParameters = {
     typeName: '',
     maxFeatures: 200,
     outputFormat: 'text/javascript',
+    // CQL_FILTER: ''
 };
 
 var parameters = L.Util.extend(defaultParameters);
 
 function handleJson(data) {
-    L.geoJson(data, {
+
+    visibleLayers.push(L.geoJson(data, {
                onEachFeature: constructPopup
-           }).addTo(map);
+           }).addTo(map));
 }
 
 function parseResponse() {
@@ -38,7 +41,7 @@ function addLayerToMap(layer_name)
         url: TO_GEOSERVER + L.Util.getParamString(parameters),
         dataType: 'jsonp',
         headers: {
-            // We'll need to use https to hide user credentials
+            // IMPORTANT: Need to use https to hide user credentials
             'Authorization': 'Basic ' + btoa('admin:admin')
         },
         jsonpCallback: 'parseResponse',

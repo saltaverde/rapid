@@ -366,26 +366,40 @@ def features(request):
     return HttpResponse(json_error('Must POST a feature to this endpoint'))
 
 @csrf_exempt
-#@login_required
+@login_required
 def fetchFromURL(request):
     user_token_key = get_token_key(request)
     data = DataOperator(user_token_key)
     importer = Importer(user_token_key)
 
-    if not data.has_layer_permissions(layerId, Role.EDITOR):
-        return HttpResponse(json_error('No editing permissions on layer.'))
+    #if not data.has_layer_permissions(layerId, Role.EDITOR):
+        #return HttpResponse(json_error('No editing permissions on layer.'))
 
-    if request.method == 'GET':
-        if request.GET.get('url'):
+
+    if request.method == 'POST':
+
+        form = UrlDataSourceForm(request.POST)
+
+        if form.is_valid:
             try:
-                url = request.GET.get('url')
-                url=urllib.unquote(url).decode('utf8')
-                importer.import_geojson_url(url, layerId)
-                return HttpResponse(json_error('Imported GeoJSON into layer.'))
+                layer_uid = data.create_layer(form.des, form.public, None)
+                url = form.url
+
+                root, ext = os.path.splitext(url)
+
+                if ext.lower() == '.json':
+                    url = urllib.unquote(url).decode('utf8')
+                    importer.import_geojson_url(url, layer_uid)
+                    return HttpResponse(json_error('Imported GeoJSON into layer.'))
+
+                elif ext.lower() == '.zip':
+                    url = urllib.unquote(url).decode('utf8')
+                    importer.import_shapefile_url(url, layer_uid)
+
             except:
-                return HttpResponse(json_error('Unable to import GeoJSON to layer.'))
-        return HttpResponse(json_error('Must include GeoJSON URL to import.'))
-    return HttpResponse(json_error('must GET'))
+                return HttpResponse(json_error('Unable to import layer.'))
+
+    return HttpResponse(json_error('must POST'))
 
 @csrf_exempt
 #@login_required

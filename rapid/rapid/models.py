@@ -1,6 +1,7 @@
 from django.contrib.gis.db import models
 from django_enumfield import enum
 from django.contrib.auth.models import User
+# from django.contrib.postgres.fields import JSONField
 
 import hmac
 import json
@@ -172,6 +173,7 @@ class Feature(models.Model):
     uid = models.TextField(primary_key=True)
     geom = models.GeometryField(null=True)
     bbox = models.PolygonField(null=True)
+    #properties = JSONField()
     properties = models.TextField(null=True)
     create_timestamp = models.TimeField(auto_now_add=True, null=True, db_index=True)
     layer = models.ForeignKey(DataLayer, null=True)

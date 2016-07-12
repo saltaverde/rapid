@@ -7,11 +7,9 @@ import requests
 import shortuuid
 import traceback
 import zipfile
-
-# generates a new random UID
 import sys
 
-
+# generates a new random UID
 def get_uid(hint=None):
     uid = shortuuid.uuid()
     return uid
