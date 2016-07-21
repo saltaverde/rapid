@@ -3,6 +3,10 @@
 {% block title %}RAPID Portal: {{ username }}{% endblock title %}
 
 {% block head_css_page %}
+    <!-- Mapbox -->
+
+    <link href='https://api.mapbox.com/mapbox.js/v2.4.0/mapbox.css' rel='stylesheet' />
+
     <!-- Leaflet stuff -->
     <link rel="stylesheet" href="{{ STATIC_URL }}js/libs/leaflet.css"/>
 
@@ -31,7 +35,9 @@
 
 {% block head_javascript_page %}
     <!-- Leaflet stuff -->
-    <script src="{{ STATIC_URL }}js/libs/leaflet-src.js"></script>
+    <script src='https://api.mapbox.com/mapbox.js/v2.4.0/mapbox.js'></script>
+
+    <!--<script src="{{ STATIC_URL }}js/libs/leaflet-src.js"></script>
 
 	<!-- Leaflet.draw plugin stuff -->
 	<script src="{{ STATIC_URL }}js/src/Leaflet.draw.js"></script>
@@ -69,12 +75,14 @@
 	<!-- Layer control stuff -->
 	<script src="{{ STATIC_URL }}js/styledLayerControl.js"></script>
 
-	<script src="http://maps.google.com/maps/api/js?v=3.2&sensor=false"></script>
+	<!-- <script src="http://maps.google.com/maps/api/js?v=3.2&sensor=false"></script>
 
-    <script src="{{ STATIC_URL }}js/plugins/leaflet-google.js"></script>
+    <script src="{{ STATIC_URL }}js/plugins/leaflet-google.js"></script> -->
 
     <script src="{{ STATIC_URL }}js/geoViewHandler.js"></script>
     <script src="{{ STATIC_URL }}js/layerHandler.js"></script>
+
+
 {% endblock head_javascript_page %}
 
 
@@ -155,17 +163,24 @@
     <script>
 
         // Google layers
-        var g_roadmap   = new L.Google('ROADMAP');
-        var g_satellite = new L.Google('SATELLITE');
-        var g_terrain   = new L.Google('TERRAIN');
+        //var g_roadmap   = new L.Google('ROADMAP');
+        //var g_satellite = new L.Google('SATELLITE');
+        //var g_terrain   = new L.Google('TERRAIN');
 
         // OSM layers
         /*var osmUrl='http://{s}.tile.osm.org/{z}/{x}/{y}.png';
         var osmAttrib='Map data © <a href="http://openstreetmap.org">OpenStreetMap</a> contributors';
         var osm = new L.TileLayer(osmUrl, {attribution: osmAttrib});*/
 
+        L.mapbox.accessToken = 'pk.eyJ1IjoiY2F0YWxpbmFnaXMiLCJhIjoiQWZiRkxSQSJ9.m8DAFPZZXiMnVaZGFsD9pQ';
+        // Create a map in the div #map
+        var map = L.mapbox.map('map', 'mapbox.streets', {
+            center: [39.224087, -98.542152],
+            zoom: 4
+        });
+
         // Map starting attributes
-        var map = L.map('map', {
+ /*       var map = L.map('map', {
             center: [39.224087, -98.542152],
             zoom: 4
         });
@@ -185,6 +200,7 @@
                             }
                         }
         ];
+        */
 
         var overlays = [];
 

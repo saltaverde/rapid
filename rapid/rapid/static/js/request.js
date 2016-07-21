@@ -212,8 +212,8 @@ $(document).ajaxStop(function () {
         map.removeLayer(gv);
         gv = undefined;
     }
-        control = L.Control.styledLayerControl(baseMaps, overlays, options);
-        gv = L.geoJson(geoViewGeometry, {style: geoViewStyle});
-        gv.addTo(map);
-        control.addTo(map);
+        // control = L.Control.styledLayerControl(baseMaps, overlays, options);
+        gv = L.geoJson(geoViewGeometry, {style: geoViewStyle}).addTo(map);
+        //gv.addTo(map);
+        //control.addTo(map);
 })
