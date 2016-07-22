@@ -90,7 +90,7 @@ class DataOperator(object):
 
         return feature
 
-    def create_feature(self, geom, layer=None, properties=None):
+    def create_feature(self, geom, layer=None, properties=None, file=None):
 
         if not type(layer) is models.DataLayer and type(layer) is str:
             layer = self.get_layer(layer)
@@ -99,6 +99,8 @@ class DataOperator(object):
         feature.uid = get_uid()
         if properties:
             feature.properties = properties
+        if file:
+            feature.file = file
         feature.save()
         return feature.uid
 

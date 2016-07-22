@@ -33,9 +33,9 @@ function parseResponse() {
     console.log("Data received")
 }
 
-function addLayerToMap(layer_name)
+function addLayerToMap(uid)
 {
-    defaultParameters.typeName = 'rapid:' + replaceAll(layer_name.data, ' ', '_').toLowerCase();
+    defaultParameters.typeName = 'rapid:' + uid.data;
     console.log(TO_GEOSERVER + L.Util.getParamString(parameters));
     $.ajax({
         url: TO_GEOSERVER + L.Util.getParamString(parameters),
@@ -106,7 +106,7 @@ var refreshLayers = function () {
                             addToMapButton.css('float', 'right');
                             addToMapButton.addClass('btn btn-default btn-xs dropdown-toggle');
                             addToMapButton.text('Preview');
-                            addToMapButton.click(existingLayers[i].descriptor, addLayerToMap);
+                            addToMapButton.click(uid, addLayerToMap);
 
                         addToMapDiv.append(addToMapButton.append($(document.createElement('span'))));
 					// 	var uid = existingLayers[i].uid;

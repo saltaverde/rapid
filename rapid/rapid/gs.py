@@ -39,8 +39,8 @@ class Geoserver():
         if layer_state is not None:
             # Methods from gsconfig lib
             cat = Catalog(GEOSERVER_REST_ENDPOINT)
-            lyrs = cat.get_layers()
-            lyr_names = [lyr.name for lyr in lyrs]
+            # lyrs = cat.get_layers()
+            # lyr_names = [lyr.name for lyr in lyrs]
 
             # No ability to create featuretypes backed by a DB in gsconfig as of now
             # Homemade solution for injecting values into xml parsed from a template
@@ -58,6 +58,7 @@ class Geoserver():
             sridElem = metadata.find('entry').find('virtualTable').find('geometry').find('srid')
 
             # Check for duplicate layer names and append a count number for disambiguation
+            '''
             count = 2
             lyr_name = layer_state['descriptor'].replace(' ', '_').lower()
             if lyr_name in lyr_names:
@@ -66,10 +67,11 @@ class Geoserver():
             while lyr_name in lyr_names:
                 count += 1
                 lyr_name = lyr_name.replace('_' + str(count), '_' + str(count + 1))
+            '''
 
             # Set appropriate values in the xml tree
             title.text = layer_state['descriptor']
-            tableName.text = lyr_name
+            tableName.text = uid
             sridElem.text = '4326'
 
             if name is not None:

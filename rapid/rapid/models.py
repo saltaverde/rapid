@@ -1,7 +1,7 @@
 from django.contrib.gis.db import models
 from django_enumfield import enum
 from django.contrib.auth.models import User
-# from django.contrib.postgres.fields import JSONField
+#from django.contrib.postgres.fields import JSONField
 
 import hmac
 import json
@@ -229,20 +229,16 @@ class ApiToken(models.Model):
     def __str__(self):
         return self.uid + ', ' + self.descriptor
 
-
 class GeoViewRole(models.Model):
     token = models.ForeignKey(ApiToken)
-    role = enum.EnumField(Role)
+    role = enum.EnumField(Role, max_length=1)
     geo_view = models.ForeignKey(GeoView)
-
     objects = models.GeoManager()
-
 
 class DataLayerRole(models.Model):
     token = models.ForeignKey(ApiToken)
     role = enum.EnumField(Role)
     layer = models.ForeignKey(DataLayer)
-
     objects = models.GeoManager()
 
 class GeoFile(models.Model):
@@ -251,7 +247,6 @@ class GeoFile(models.Model):
     filename = models.TextField(null=True)
     geom = models.GeometryField(null=True)
     descriptor = models.TextField(null=True)
-
     objects = models.GeoManager()
 
     @staticmethod
@@ -278,7 +273,6 @@ class GeoFile(models.Model):
     @staticmethod
     def get_geofiles_in_geom(geom):
         return GeoFile.objects.filter(geom__intersects=geom)
-
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User)

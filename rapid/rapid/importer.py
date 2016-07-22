@@ -1,6 +1,7 @@
 from django.contrib.gis.geos import GEOSGeometry, Point
 from django.contrib.gis.gdal import DataSource as GdalDataSource
 from django.contrib.gis.gdal import SpatialReference
+from django.core.files.base import ContentFile, File
 
 from rapid.helpers import *
 from rapid.models import *
@@ -11,6 +12,7 @@ import geojson
 import urllib2
 from zipfile import *
 from StringIO import StringIO
+import os
 
 class Importer(object):
     def __init__(self, token_key=None):
@@ -44,7 +46,49 @@ class Importer(object):
 
             data.create_feature(geom, layer=layer, properties=feature.properties)
 
+    def import_document_url(self, url, geom, layer_uid=None):
+        '''CAUTION: UNTESTED!'''
+        with urllib2.urlopen(url) as f:
+            content = f.read()
+
+        geom = Point(geom[0], geom[1])
+
+        baseurl, filename = os.path.split(endpoint)
+        filename, ext = os.path.splitext(filename)
+
+        self.import_document_content(content, filename, geom, layer_uid)
+
+    def import_document_content(self, content, filename, geom, layer_uid=None):
+        '''CAUTION: UNTESTED!'''
+        try:
+            data = DataOperator(self.token_key)
+            layer = data.get_layer(layer_uid)
+        except:
+            raise Exception('Invalid layer UID')
+
+        with ContentFile(content) as f:
+            f.name = filename
+            data.create_feature(geom=geom, layer=layer, properties=None, file=f)
+
+    def import_document(self, path, geom, layer_uid=None):
+        '''CAUTION: UNTESTED!'''
+        try:
+            data = DataOperator(self.token_key)
+            layer = data.get_layer(layer_uid)
+        except:
+            raise Exception('Invalid layer UID')
+
+        geom = Point(geom[0], geom[1])
+
+        with open(path, 'r') as f:
+            data.create_feature(geom=geom, layer=layer, properties=None, file=f)
+
+        os.remove(path)
+
     def import_shapefile_url(self, endpoint, layer_uid=None):
+        '''
+        CAUTION: UNTESTED!
+        '''
         f = urllib2.urlopen(endpoint)
 
         # Following step could take awhile
@@ -130,18 +174,6 @@ class Importer(object):
             data.create_feature(geom, layer=layer, properties=properties)
 
         return
-
-
-    def import_kml(self, path, layer_uid=None):
-        try:
-            data = DataOperator(self.token_key)
-            layer = data.get_layer(layer_uid)
-        except:
-            raise Exception('Invalid layer UID')
-
-        ds = GdalDataSource(path)
-
-        # To be continued . . .
 
     def import_shapefile(self, path, layer_uid=None):
         try:
