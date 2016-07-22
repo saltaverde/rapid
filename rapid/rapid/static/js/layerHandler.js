@@ -1,10 +1,8 @@
-// var layers  = {};
-var visibleLayers = {};
+var TO_GEOSERVER = 'http://geocontex.com:8080/geoserver/ows';
+var layers = {};
 var add = true;
 
-var TO_GEOSERVER = 'http://geocontex.com:8080/geoserver/ows';
-
-function replaceAll(str, find, replace) {
+var replaceAll = function (str, find, replace) {
   return str.replace(new RegExp(find, 'g'), replace);
 }
 
@@ -25,9 +23,11 @@ var parameters = L.Util.extend(defaultParameters);
 
 function handleJson(data, uid) {
 
-    visibleLayers[uid] = L.geoJson(data, {
+    layers[uid] = L.geoJson(data, {
                             onEachFeature: constructPopup
                             }).addTo(map);
+
+    map.fitBounds(layers[uid]);
 }
 
 function parseResponse() {
@@ -36,32 +36,35 @@ function parseResponse() {
 
 function addLayerToMap(uid)
 {
+    var button = $(document.getElementById(uid.data + "_show"));
+
     if (add == true) {
-       defaultParameters.typeName = 'rapid:' + uid.data;
+        if (layers[uid.data]) {
+            map.addLayer(layers[uid.data]);
+        }
+        else {
+            defaultParameters.typeName = 'rapid:' + uid.data;
 
-        console.log(TO_GEOSERVER + L.Util.getParamString(parameters));
+            console.log(TO_GEOSERVER + L.Util.getParamString(parameters));
 
-        $.ajax({
-            url: TO_GEOSERVER + L.Util.getParamString(parameters),
-            dataType: 'jsonp',
-            headers: {
-                // IMPORTANT: Need to use https to hide user credentials
-                'Authorization': 'Basic ' + btoa('admin:admin')
-            },
-            jsonpCallback: 'parseResponse',
-            success: function(data) {
-                handleJson(data, uid.data);
-            }
-        });
-
-        var button = $(document.getElementById(uid.data + "_show"));
+            $.ajax({
+                url: TO_GEOSERVER + L.Util.getParamString(parameters),
+                dataType: 'jsonp',
+                headers: {
+                    // IMPORTANT: Need to use https to hide user credentials
+                    'Authorization': 'Basic ' + btoa('admin:admin')
+                },
+                jsonpCallback: 'parseResponse',
+                success: function(data) {
+                    handleJson(data, uid.data);
+                }
+            });
+        }
 
         button.text('Remove');
     }
     else {
-        map.removeLayer(visibleLayers[uid.data]);
-
-        var button = $(document.getElementById(uid.data + "_show"));
+        map.removeLayer(layers[uid.data]);
 
         button.text('Preview');
     }
