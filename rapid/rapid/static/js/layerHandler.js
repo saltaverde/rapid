@@ -1,5 +1,6 @@
-var layers  = {};
-var visibleLayers = [];
+// var layers  = {};
+var visibleLayers = {};
+var add = true;
 
 var TO_GEOSERVER = 'http://geocontex.com:8080/geoserver/ows';
 
@@ -22,11 +23,11 @@ var defaultParameters = {
 
 var parameters = L.Util.extend(defaultParameters);
 
-function handleJson(data) {
+function handleJson(data, uid) {
 
-    visibleLayers.push(L.geoJson(data, {
-               onEachFeature: constructPopup
-           }).addTo(map));
+    visibleLayers[uid] = L.geoJson(data, {
+                            onEachFeature: constructPopup
+                            }).addTo(map);
 }
 
 function parseResponse() {
@@ -35,18 +36,37 @@ function parseResponse() {
 
 function addLayerToMap(uid)
 {
-    defaultParameters.typeName = 'rapid:' + uid.data;
-    console.log(TO_GEOSERVER + L.Util.getParamString(parameters));
-    $.ajax({
-        url: TO_GEOSERVER + L.Util.getParamString(parameters),
-        dataType: 'jsonp',
-        headers: {
-            // IMPORTANT: Need to use https to hide user credentials
-            'Authorization': 'Basic ' + btoa('admin:admin')
-        },
-        jsonpCallback: 'parseResponse',
-        success: handleJson
-    });
+    if (add == true) {
+       defaultParameters.typeName = 'rapid:' + uid.data;
+
+        console.log(TO_GEOSERVER + L.Util.getParamString(parameters));
+
+        $.ajax({
+            url: TO_GEOSERVER + L.Util.getParamString(parameters),
+            dataType: 'jsonp',
+            headers: {
+                // IMPORTANT: Need to use https to hide user credentials
+                'Authorization': 'Basic ' + btoa('admin:admin')
+            },
+            jsonpCallback: 'parseResponse',
+            success: function(data) {
+                handleJson(data, uid.data);
+            }
+        });
+
+        var button = $(document.getElementById(uid.data + "_show"));
+
+        button.text('Remove');
+    }
+    else {
+        map.removeLayer(visibleLayers[uid.data]);
+
+        var button = $(document.getElementById(uid.data + "_show"));
+
+        button.text('Preview');
+    }
+
+    add = !add;
 }
 
 var refreshLayers = function () {
@@ -64,7 +84,7 @@ var refreshLayers = function () {
 					for (i = 0; i < existingLayers.length; i++) {
                      //    var att;
 					    var uid = existingLayers[i].uid;
-					    layers[existingLayers[i].descriptor] = existingLayers[i];
+					    // layers[uid] = existingLayers[i];
                         var liDiv = $(document.createElement('div'));
                         var buttonDiv = $(document.createElement('div')).addClass('dropdown').css({'display': 'inline-block', 'float': 'right'});
 						var button = $(document.createElement('button'));
