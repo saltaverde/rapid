@@ -1,9 +1,11 @@
-var Request = {
+Request = {
     // Constant webpage endpoints
     TO_FEATURE: "/rapid/feature/",
     TO_LAYER: "/rapid/layer/",
     TO_GEOVIEW: "/rapid/geoview/",
-    TO_BASE: "/rapid/"
+    TO_BASE: "/rapid/",
+    TO_GEOSERVER: "http://geocontex.com:8080/geoserver/ows",
+    TO_GEOSERVER_LAYERS: "/rapid/geoserverlayers"
 };
 
 var geoViewStyle = {

@@ -1,4 +1,3 @@
-var TO_GEOSERVER = 'http://geocontex.com:8080/geoserver/ows';
 var layers = {};
 var add = true;
 
@@ -45,10 +44,10 @@ function addLayerToMap(uid)
         else {
             defaultParameters.typeName = 'rapid:' + uid.data;
 
-            console.log(TO_GEOSERVER + L.Util.getParamString(parameters));
+            console.log(Request.TO_GEOSERVER + L.Util.getParamString(parameters));
 
             $.ajax({
-                url: TO_GEOSERVER + L.Util.getParamString(parameters),
+                url: Request.TO_GEOSERVER + L.Util.getParamString(parameters),
                 dataType: 'jsonp',
                 headers: {
                     // IMPORTANT: Need to use https to hide user credentials
@@ -75,7 +74,7 @@ function addLayerToMap(uid)
 var refreshLayers = function () {
 	try {
 			var oReq = new XMLHttpRequest();
-			oReq.open("GET", Request.TO_LAYER);
+			oReq.open("GET", Request.TO_GEOSERVER_LAYERS);
 			oReq.send();
 
 			oReq.onreadystatechange = function() {
@@ -121,7 +120,7 @@ var refreshLayers = function () {
 
 						var public = existingLayers[i].is_public == false ? '(private) ' : '(public) ';
 
-						var descriptor = document.createTextNode(existingLayers[i].descriptor + " " + public);
+						var descriptor = document.createTextNode(existingLayers[i].title + " " + public);
                         var addToMapDiv = $(document.createElement('div')).addClass('dropdown').css({'display': 'inline-block', 'float': 'right'});
                         var addToMapButton = $(document.createElement('button'));
                             addToMapButton.attr('type','button');

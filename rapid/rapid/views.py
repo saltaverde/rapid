@@ -533,7 +533,14 @@ def getFeaturesInGeoview(request, geo_uid):
         return HttpResponse(None)
 
 @csrf_exempt
-def getGeoserverLayers(request, username):
+@login_required
+def getGeoserverLayers(request):
+
+    user_token_key = get_token_key(request)
+    data = DataOperator(user_token_key)
+
+    username = data.get_apitoken().descriptor
+
     if username is not None:
         try:
             response = getGeofenceRules(username)
@@ -547,12 +554,18 @@ def getGeoserverLayers(request, username):
             ruleList.remove(ruleList._children[-1])  # Clear out the catchall "DENY" rule
 
             for rule in ruleList.findall('rule'):
-                to_add = {}
-                to_add['id'] = rule.find('id').text
-                to_add['grant'] = rule.attrib['grant']
-                to_add['layer'] = rule.find('layer').text
-                # to_add['request'] = rule.find('request').text
-                to_add['workspace'] = rule.find('workspace').text
+
+                uid = rule.find('layer').text
+                layer = DataLayer.objects.get(uid=uid)
+
+                to_add = {
+                    'id': rule.find('id').text,
+                    'grant': rule.attrib['grant'],
+                    'uid': uid,
+                    'title': layer.descriptor,
+                    'workspace': rule.find('workspace').text,
+                    'is_public': layer.is_public
+                }
 
                 rules.append(to_add)
 
@@ -830,3 +843,4 @@ def portal(request):
         context = {'username': user.username, 'form': form, 'STATIC_URL': STATIC_URL}
 
         return render(request, 'rapid/portal/main.html', context)
+                                        

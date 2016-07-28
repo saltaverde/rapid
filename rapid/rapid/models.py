@@ -231,7 +231,7 @@ class ApiToken(models.Model):
 
 class GeoViewRole(models.Model):
     token = models.ForeignKey(ApiToken)
-    role = enum.EnumField(Role, max_length=1)
+    role = enum.EnumField(Role, default=Role.OWNER)
     geo_view = models.ForeignKey(GeoView)
     objects = models.GeoManager()
 
