@@ -179,41 +179,17 @@
             zoom: 4
         });
 
-        // Map starting attributes
- /*       var map = L.map('map', {
-            center: [39.224087, -98.542152],
-            zoom: 4
-        });
-
-        // Tile layer for map to use
-        map.addLayer(g_roadmap);
-
-
-        var baseMaps = [
-                        {
-                            groupName : "Base Maps",
-                            expanded : false,
-                            layers    : {
-                                "Satellite" :  g_satellite,
-                                "Road Map"  :  g_roadmap,
-                                "Terrain"   :  g_terrain
-                            }
-                        }
-        ];
-        */
-
         var overlays = [];
 
         var options = {
             container_width 	: "300px",
             group_maxHeight     : "80px",
-            //container_maxHeight : "350px",
             exclusive       	: false
         };
 
-        loadGUI();
+        refreshGeoViews();
 
-        var geoViews = {};
+        // var geoViews = {};
 
     </script>
 
