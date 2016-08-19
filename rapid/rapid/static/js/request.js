@@ -5,22 +5,81 @@ Request = {
     TO_GEOVIEW: "/rapid/geoview/",
     TO_BASE: "/rapid/",
     TO_GEOSERVER: "http://geocontex.com:8080/geoserver/ows",
-    TO_GEOSERVER_LAYERS: "/rapid/geoserverlayers"
+    TO_GEOSERVER_LAYERS: "/rapid/geoserver/layers/",
+    TO_GEOSERVER_GEOVIEWS: "/rapid/geoserver/geoviews/"
 };
+
+var geoViews = {};
+// var geoViewGeometry = [];
+// var control;
+// var gv;
 
 var geoViewStyle = {
         weight: 2,
         fillOpacity: 0,
         color: 'black',
-        dashArray: '5,5'
+        dashArray: '5,5',
+        clickable: false
     };
 
-var geoViewGeometry = []; 
+var refreshGeoViews = function () {
 
-var control;
+    var callback = function(data) {
+        var fc = JSON.parse(data);
+        console.log(fc);
 
-var gv;
-    
+        geoViewList.innerHTML = '<li><h4>GeoViews</h4></li>';
+
+        for (var i = 0; i < fc['features'].length; i++) {
+            var view = fc['features'][i];
+            var uid = view.properties.uid;
+            geoViews[uid] = L.geoJson(view, {style: geoViewStyle}).addTo(map);
+
+            var geoViewListElement = document.createElement("LI");
+            var geoViewListElementDiv = document.createElement('DIV');
+            geoViewListElementDiv.id = uid;
+            geoViewListElementDiv.style.marginBottom = '5px';
+            geoViewListElementDiv.style.width = '100%';
+            geoViewListElementDiv.style.display = 'inline-block';
+
+            var descriptor = document.createTextNode(view.properties.title);
+            var showIntersectingFeatures = document.createElement("BUTTON");
+            showIntersectingFeatures.type = 'button';
+            showIntersectingFeatures.id = uid + '_show';
+            showIntersectingFeatures.style.float = 'right';
+            showIntersectingFeatures.className = 'btn btn-default btn-xs';
+            showIntersectingFeatures.onclick = (function(s) {
+                return function() { getFeaturesInGeoview(s); };
+            }(uid), false);
+            showIntersectingFeatures.value = 'Get Features';
+            var buttonText = document.createTextNode('Show All Data');
+            showIntersectingFeatures.appendChild(buttonText);
+            geoViewListElement.appendChild(geoViewListElementDiv).appendChild(descriptor);
+            geoViewListElement.appendChild(geoViewListElementDiv).appendChild(showIntersectingFeatures);
+
+            var ul = document.createElement("UL");
+            ul.id = uid + '_layers';
+
+            for (var key in view.properties.layers) {
+                var liDiv = document.createElement("DIV");
+                var li = document.createElement("LI");
+                var descriptor = document.createTextNode(view.properties.layers[key]);
+                liDiv.id = key;
+                li.appendChild(liDiv).appendChild(descriptor);
+                ul.appendChild(li);
+            }
+            geoViewListElement.appendChild(ul);
+            geoViewList.appendChild(geoViewListElement);
+        }
+    }
+
+    ajaxCall(Request.TO_GEOSERVER_GEOVIEWS, callback);
+
+    return true;
+};
+
+
+/*
 function getGeoviews(geoViewsText, getLayers) {
     
     geoViewGeometry = [];
@@ -151,7 +210,7 @@ function getGeoview(geoViewText, getLayers) {
     overlays.push(gview);
     }
 }    
-
+*/
 function ajaxCall(address, callback) {
     
     var response =  $.ajax({
@@ -201,12 +260,18 @@ function constructPopup(feature, layer) {
 
 function loadGUI() {
     // Grabs the geoviews associated with the user's token
+    /*
     ajaxCall(Request.TO_GEOVIEW+"?token="+localStorage.getItem('token'), function (response) {
         getGeoviews(response, true)});
+        */
     //test();
+
+    refreshGeoViews();
 }
    
 $(document).ajaxStop(function () {
+    ;
+    /*
     if (control !== undefined) {
         control.removeFrom(map);
     }
@@ -214,8 +279,9 @@ $(document).ajaxStop(function () {
         map.removeLayer(gv);
         gv = undefined;
     }
+    */
         // control = L.Control.styledLayerControl(baseMaps, overlays, options);
-        gv = L.geoJson(geoViewGeometry, {style: geoViewStyle}).addTo(map);
+        // gv = L.geoJson(geoViewGeometry, {style: geoViewStyle}).addTo(map);
         //gv.addTo(map);
         //control.addTo(map);
 })

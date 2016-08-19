@@ -40,7 +40,9 @@ class GeoView(models.Model):
     bbox = models.PolygonField(null=True)
     properties = models.TextField(null=True)
     layers = models.ManyToManyField('DataLayer')
+    gs_layers = models.TextField(null=True)
     is_public = models.BooleanField(default=False)
+    gs_uid = models.TextField(null=True) # uid not accessible by Geoserver, so had to put this one in
 
     # unpublished flags. workaround for including/excluding extra info in output
     include_layers = models.NullBooleanField(null=True)
@@ -72,8 +74,8 @@ class GeoView(models.Model):
 
     def add_layer(self, layer):
         # error checking here
-
         self.layers.add(layer)
+        self.gs_layers = json.dumps([lyr.uid for lyr in self.layers.all()])
 
     def get_json_features(self):
         results = []
@@ -231,7 +233,7 @@ class ApiToken(models.Model):
 
 class GeoViewRole(models.Model):
     token = models.ForeignKey(ApiToken)
-    role = enum.EnumField(Role, default=Role.OWNER)
+    role = enum.EnumField(Role)
     geo_view = models.ForeignKey(GeoView)
     objects = models.GeoManager()
 

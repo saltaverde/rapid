@@ -556,20 +556,78 @@ def getGeoserverLayers(request):
             for rule in ruleList.findall('rule'):
 
                 uid = rule.find('layer').text
-                layer = DataLayer.objects.get(uid=uid)
 
-                to_add = {
-                    'id': rule.find('id').text,
-                    'grant': rule.attrib['grant'],
-                    'uid': uid,
-                    'title': layer.descriptor,
-                    'workspace': rule.find('workspace').text,
-                    'is_public': layer.is_public
-                }
+                try:
+                    layer = DataLayer.objects.get(uid=uid)
 
-                rules.append(to_add)
+                    to_add = {
+                        'id': rule.find('id').text,
+                        'grant': rule.attrib['grant'],
+                        'uid': uid,
+                        'title': layer.descriptor,
+                        'workspace': rule.find('workspace').text,
+                        'is_public': layer.is_public
+                    }
+
+                    rules.append(to_add)
+
+                except:
+                    pass
 
             return HttpResponse(to_json(rules), content_type='application/json')
+
+        else:
+            return HttpResponse(json_error('ERROR: request for rules returned status code ' + str(response.status_code)))
+
+    else:
+        return HttpResponse(json_error('ERROR: no username provided'))
+
+@login_required
+def getGeoserverGeoviews(request):
+
+    user_token_key = get_token_key(request)
+    data = DataOperator(user_token_key)
+
+    username = data.get_apitoken().descriptor
+
+    if username is not None:
+        try:
+            response = getGeofenceRules(username)
+        except:
+            print "Exception encountered when fetching rules: "
+            return
+
+        if response.status_code == 200:
+            rules = []
+            ruleList = ET.fromstring(response.content)
+            ruleList.remove(ruleList._children[-1])  # Clear out the catchall "DENY" rule
+
+            for rule in ruleList.findall('rule'):
+
+                uid = rule.find('layer').text
+
+                try:
+                    gv = GeoView.objects.get(uid=uid)
+
+                    to_add = {
+                        'type':'Feature',
+                        'id': rule.find('id').text,
+                        'properties': { 'grant': rule.attrib['grant'],
+                            'uid': uid,
+                            'title': gv.descriptor,
+                            'workspace': rule.find('workspace').text,
+                            'layers': {layer.uid:layer.descriptor for layer in gv.layers.all()} },
+                        'geometry': json.loads(gv.geom.geojson)
+                    }
+
+                    rules.append(to_add)
+
+                except:
+                    pass
+
+            geojson_dict = { "type":"FeatureCollection", "totalFeatures":len(rules), "features":rules }
+
+            return HttpResponse(to_json(geojson_dict), content_type='application/json')
 
         else:
             return HttpResponse(json_error('ERROR: request for rules returned status code ' + str(response.status_code)))

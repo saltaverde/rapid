@@ -110,9 +110,8 @@ var refreshLayers = function () {
 
                         for (var geoView in geoViews) {
                             dropdownLI = $(document.createElement('li'));
-                            var dropdownA = $(document.createElement('a')).text(geoViews[geoView].descriptor).attr('href', '#');
-                            dropdownA.attr ('onClick',
-                                 'addLayerToGeoView(\'' + uid +'\', \'' + geoViews[geoView].descriptor +'\')');
+                            var dropdownA = $(document.createElement('a')).text('- ' + geoViews[geoView].descriptor).attr('href', '#');
+                            dropdownA.attr ('onClick', 'addLayerToGeoView(\'' + uid +'\', \'' + geoViews[geoView].uid +'\')');
                             dropdownUL.append(dropdownLI.append(dropdownA));
                         }
 

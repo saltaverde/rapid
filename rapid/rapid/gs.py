@@ -104,12 +104,15 @@ class Geoserver():
         Returns an XML formatted string used to post to the Geoserver REST API
         """
         try:
-            layer = DataLayer.objects.get(uid=uid)
+            object = DataLayer.objects.get(uid=uid)
         except:
-            return None
+            try:
+                object = GeoView.objects.get(uid=uid)
+            except:
+                return None
 
-        if layer is not None:
-            # No ability to create featuretypes backed by a DB in gsconfig as of now
+        if object is not None:
+            # No ability to create FeatureTypes backed by a DB in gsconfig as of now
             # Homemade solution for injecting values into xml parsed from a template
             tree = et.parse(FEATURETYPE_XML_TEMPLATE_PATH)
             featureType = tree.getroot()
@@ -124,8 +127,13 @@ class Geoserver():
             geomType = metadata.find('entry').find('virtualTable').find('geometry').find('type')
             sridElem = metadata.find('entry').find('virtualTable').find('geometry').find('srid')
 
+            if object.descriptor == '' or object.descriptor == None:
+                titleText = 'Not provided'
+            else:
+                titleText = object.descriptor
+
             # Set appropriate values in the xml tree
-            title.text = layer.descriptor
+            title.text = titleText
             tableName.text = uid
             sridElem.text = '4326'
 
@@ -139,10 +147,19 @@ class Geoserver():
             else:
                 nativeName.text = 'Not provided'
 
-            geomType.text = layer.feature_set.first().geom.geom_type
+            if isinstance(object, DataLayer):
+                source_layer = 'rapid_feature'
+                geomType.text = object.feature_set.first().geom.geom_type
+                field = 'layer_id'
+            elif isinstance(object, GeoView):
+                source_layer = 'rapid_geoview'
+                geomType.text = object.geom.geom_type
+                field = 'gs_uid'
+            else:
+                return None
 
             if sqlView is not None:
-                sqlView.text = "select * from rapid_feature where layer_id='" + uid + "'"
+                sqlView.text = "select * from " + source_layer + " where " + field + " ='" + uid + "'"
 
             return et.tostring(featureType)
 

@@ -188,6 +188,7 @@ class DataOperator(object):
     def create_geoview(self, geom, descriptor, properties, public=False):
         view = GeoView(geom=geom, descriptor=descriptor, properties=properties, is_public=public)
         view.uid = get_uid()
+        view.gs_uid = view.uid # The view.uid field is not accessible by Geoserver, so had to put this clone in
         view.save()
 
         role = GeoViewRole(geo_view=view, token_id=self.get_apitoken().uid, role=Role.OWNER)
@@ -195,14 +196,16 @@ class DataOperator(object):
         return view.uid
 
     def add_layer_to_geoview(self, geoview_uid, layer_uid):
-        geoview = GeoView.objects.filter(uid=geoview_uid)
-        layer = DataLayer.objects.filter(uid=layer_uid)
+        try:
+            geoview = GeoView.objects.get(uid=geoview_uid)
+            layer = DataLayer.objects.get(uid=layer_uid)
+        except:
+            return "FAILURE: incorrect uid(s): GeoView: {0}, Layer: {1}".format(geoview_uid, layer_uid)
 
-        if geoview.count() > 0 and layer.count() > 0:
-            geoview[0].add_layer(layer[0])
-            geoview[0].save()
-            return "SUCCESS: ", geoview[0].uid, " + ", layer[0].uid
-        return "FAILURE: incorrect uid"
+        geoview.add_layer(layer)
+        geoview.save()
+
+        return "SUCCESS: ", geoview_uid, " + ", layer_uid
 
 
     def remove_layer_from_geoview(self, geoview_uid, layer_uid):
